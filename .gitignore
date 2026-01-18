@@ -39,3 +39,11 @@
 
 # debug information files
 *.dwo
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+.cache
+.vscode
+build

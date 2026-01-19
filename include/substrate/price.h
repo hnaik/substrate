@@ -22,14 +22,14 @@
 
 #include <substrate/sbs_protocol/Price.h>
 
-#include <cstddef>
 #include <cstdint>
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <sys/types.h>
 
 namespace substrate {
-template <typename T, size_t Denom = 1'000>
+template <typename T, ssize_t Denom = 1'000>
 class PriceBase : public WrappedType<PriceBase<T>, sbs_protocol::Price> {
     using base_type = WrappedType<PriceBase<T>, sbs_protocol::Price>;
 
@@ -42,25 +42,34 @@ public:
     {
         underlying_type::reset(std::move(price));
     }
+    explicit PriceBase(std::string_view sv)
+    {
+        auto v = static_cast<primitive_type>(std::stod(sv.data())) * Denom;
+        this->u_.value(v);
+    }
 
     T display_value() const
     {
         return static_cast<T>(this->u_.value()) / static_cast<T>(Denom);
     }
+    primitive_type value() const { return this->u_.value(); }
 
-    template <typename W, size_t N>
-    friend std::ostream& operator<<(std::ostream& os, const PriceBase<W, N>& p);
-
-    template <typename W, size_t N>
+    template <typename W, ssize_t N>
     bool operator==(const PriceBase<W, N>& other) const
     {
         return value() == other.value();
     }
 
-    template <typename W, size_t N>
+    template <typename W, ssize_t N>
     bool operator!=(const PriceBase<W, N>& other) const
     {
         return value() != other.value();
+    }
+
+    template <typename W, ssize_t N>
+    auto operator<=>(const PriceBase<W, N>& other) const
+    {
+        return value() <=> other.value();
     }
 
     static PriceBase from_sv(std::string_view sv)
@@ -79,10 +88,11 @@ public:
         return pb;
     }
 
-    primitive_type value() const { return this->u_.value(); }
+    template <typename W, ssize_t N>
+    friend std::ostream& operator<<(std::ostream& os, const PriceBase<W, N>& p);
 };
 
-template <typename W, size_t N>
+template <typename W, ssize_t N>
 std::ostream& operator<<(std::ostream& os, const PriceBase<W, N>& p)
 {
     os << p.display_value();

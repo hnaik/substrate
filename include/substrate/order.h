@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "messages.h"
+#include "common_types.h"
 
 #include <tuple>
 

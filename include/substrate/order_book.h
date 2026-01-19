@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "messages.h"
+#include "common_types.h"
 #include "order.h"
 
 #include <cstddef>
@@ -72,33 +72,33 @@ public:
         if(itr->second.size() == 0) {
             return;
         }
-        registry_.erase((*begin(itr->second))->orderid);
+        registry_.erase((*begin(itr->second))->clordid);
         itr->second.pop_front();
         if(itr->second.size() == 0) {
             q_.erase(itr->first);
         }
     }
 
-    void add(const key_type& price, ClientOrderID orderid, Quantity quantity)
+    void add(const key_type& price, ClientOrderID clordid, Quantity quantity)
     {
         if(!q_.contains(price)) {
             q_.emplace(price, TimePriorityQueue());
         }
-        registry_[orderid] = q_.at(price).emplace(
-            end(q_.at(price)), new Order{orderid, quantity, price});
+        registry_[clordid] = q_.at(price).emplace(
+            end(q_.at(price)), new Order{clordid, quantity, price});
     }
 
     size_t size() const { return q_.size(); }
     bool empty() const { return size() == 0; }
 
-    bool has_order(ClientOrderID orderid) const
+    bool has_order(ClientOrderID clordid) const
     {
-        return registry_.contains(orderid);
+        return registry_.contains(clordid);
     }
 
-    void remove_order(ClientOrderID orderid)
+    void remove_order(ClientOrderID clordid)
     {
-        auto itr = registry_.find(orderid);
+        auto itr = registry_.find(clordid);
         if(itr == end(registry_)) {
             // Optionally print an error if the spec states this requirement
             return;
@@ -111,7 +111,7 @@ public:
             return;
         }
         p_itr->second.erase(itr->second);
-        registry_.erase(orderid);
+        registry_.erase(clordid);
         if(p_itr->second.empty()) {
             q_.erase(p_itr->first);
         }

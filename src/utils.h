@@ -1,5 +1,5 @@
 #pragma once
 
-namespace rootmethod::substrate {
+namespace substrate {
 
-} // namespace rootmethod::substrate
+} // namespace substrate

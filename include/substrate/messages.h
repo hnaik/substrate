@@ -53,11 +53,6 @@ protected:
     using underlying_type = UnderlyingType;
     using wrapped_type = WrappedType;
     static constexpr std::size_t size = sizeof(underlying_type);
-    using wrapped_ptr = std::unique_ptr<wrapped_type>;
-
-    void init() { u_.wrapForEncode(buf_.data(), 0, size); }
-    underlying_type& self() { return u_; }
-    const underlying_type& self() const { return u_; }
 
     char* buf_begin()
     {
@@ -124,8 +119,8 @@ public:
              const Account& account,
              const Timestamp& client_ts,
              SelfTradePolicy stp)
+        : NewOrder{}
     {
-        init();
         u_.clordid(clordid)
             .side(static_cast<sbs_protocol::Side::Value>(side))
             .qty(qty)
@@ -151,7 +146,7 @@ public:
     Timestamp client_ts() { return u_.client_ts().time(); }
     SelfTradePolicy stp() const
     {
-        return static_cast<SelfTradePolicy>(self().self_trade_policy());
+        return static_cast<SelfTradePolicy>(u_.self_trade_policy());
     }
 };
 

@@ -29,4 +29,10 @@
     <composite name="Timestamp">
         <type name="time" primitiveType="uint64" semanticType="UTCTimestamp" />
     </composite>
+    <composite name="Symbol">
+        <type name="data" primitiveType="char" length="8" semanticType="Symbol" />
+    </composite>
+    <composite name="Account">
+        <type name="data" primitiveType="char" length="16" semanticType="Account" />
+    </composite>
 </types>

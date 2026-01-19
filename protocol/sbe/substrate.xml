@@ -17,12 +17,6 @@
             <type name="schemaId" primitiveType="uint16" />
             <type name="version" primitiveType="uint16" />
         </composite>
-        <composite name="Symbol">
-            <type name="data" primitiveType="char" length="8" />
-        </composite>
-        <composite name="Account">
-            <type name="data" primitiveType="char" length="16" />
-        </composite>
     </types>
 
     <sbe:message name="NewOrder" id="1" description="New Order">

@@ -17,29 +17,23 @@
 # with this program. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 # ============================================================================*/
 
-#include <substrate/application.h>
-#include <substrate/message_helpers.h>
-// #include <substrate/messages.h>
-#include <substrate/version.h>
+#pragma once
 
-int main()
-{
+#include "common_types.h"
+#include "protocol.h"
+#include "timestamp.h"
+#include "wrapped_type.h"
 
-    using namespace substrate;
+namespace substrate {
 
-    Application<int> app{"Matching Engine"};
-    app.run();
+class CancelOrder : public WrappedType<CancelOrder, sbs_protocol::CancelOrder> {
+    using base_type = WrappedType<CancelOrder, sbs_protocol::CancelOrder>;
 
-    // NewOrder order{12345,
-    //                Symbol::from_sv("AAPL"),
-    //                Side::buy,
-    //                Quantity{100},
-    //                Quantity{100},
-    //                Quantity{100},
-    //                Price{123.45},
-    //                TIF::day,
-    //                Account::from_sv("1000123"),
-    //                Timestamp{123456},
-    //                SelfTradePolicy::cancel_new};
-    // INFO("order: {}", order.to_string());
-}
+public:
+    CancelOrder(ClientOrderID clordid, Quantity qty, const Timestamp& client_ts)
+    {
+        u_.clordid(clordid).qty(qty);
+        u_.client_ts().time(client_ts.time());
+    }
+};
+} // namespace substrate

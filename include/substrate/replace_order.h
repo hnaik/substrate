@@ -17,29 +17,29 @@
 # with this program. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 # ============================================================================*/
 
-#include <substrate/application.h>
-#include <substrate/message_helpers.h>
-// #include <substrate/messages.h>
-#include <substrate/version.h>
+#pragma once
 
-int main()
-{
+#include "common_types.h"
+#include "protocol.h"
+#include "timestamp.h"
+#include "wrapped_type.h"
 
-    using namespace substrate;
+namespace substrate {
 
-    Application<int> app{"Matching Engine"};
-    app.run();
+class ReplaceOrder
+    : public WrappedType<ReplaceOrder, sbs_protocol::ReplaceOrder> {
+    using base_type = WrappedType<ReplaceOrder, sbs_protocol::ReplaceOrder>;
 
-    // NewOrder order{12345,
-    //                Symbol::from_sv("AAPL"),
-    //                Side::buy,
-    //                Quantity{100},
-    //                Quantity{100},
-    //                Quantity{100},
-    //                Price{123.45},
-    //                TIF::day,
-    //                Account::from_sv("1000123"),
-    //                Timestamp{123456},
-    //                SelfTradePolicy::cancel_new};
-    // INFO("order: {}", order.to_string());
-}
+public:
+    ReplaceOrder(ClientOrderID orig_clordid,
+                 ClientOrderID clordid,
+                 Quantity new_qty,
+                 Price new_price,
+                 const Timestamp& client_ts)
+    {
+        u_.orig_clordid(orig_clordid).clordid(clordid).new_qty(new_qty);
+        u_.client_ts().time(client_ts.time());
+        u_.new_price().value(new_price.value());
+    }
+};
+} // namespace substrate

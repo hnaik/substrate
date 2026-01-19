@@ -14,7 +14,7 @@ TEST_CASE("NewOrder")
                        Quantity{100},
                        Quantity{100},
                        Quantity{100},
-                       Price{123.45},
+                       Price::from_sv("123.45"),
                        TIF::day,
                        Account::from_sv("1000123"),
                        Timestamp{123456},
@@ -25,7 +25,7 @@ TEST_CASE("NewOrder")
         REQUIRE(order.qty() == Quantity{100});
         REQUIRE(order.min_qty() == Quantity{100});
         REQUIRE(order.display_qty() == Quantity{100});
-        REQUIRE(order.price() == Price{123.45});
+        REQUIRE(order.price() == Price::from_string("123.45"));
         REQUIRE(order.tif() == TIF::day);
         REQUIRE(order.account() == "1000123");
     }

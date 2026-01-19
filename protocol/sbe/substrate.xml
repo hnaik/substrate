@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema
+    xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    package="sbs_protocol"
+    id="1"
+    version="0"
+    semanticVersion="5.2"
+    description="Substrate"
+    byteOrder="littleEndian">
+
+    <xi:include href="common-types.xml" />
+    <types>
+        <composite name="messageHeader" description="Message identifiers and length of message root">
+            <type name="blockLength" primitiveType="uint16" />
+            <type name="templateId" primitiveType="uint16" />
+            <type name="schemaId" primitiveType="uint16" />
+            <type name="version" primitiveType="uint16" />
+        </composite>
+        <composite name="Symbol">
+            <type name="data" primitiveType="char" length="8" />
+        </composite>
+        <composite name="Account">
+            <type name="data" primitiveType="char" length="16" />
+        </composite>
+    </types>
+
+    <sbe:message name="NewOrder" id="1" description="New Order">
+        <field name="clordid" id="1" type="ClientOrderID" description="Client Order ID" />
+        <field name="symbol" id="2" type="Symbol" description="Trading Symbol" />
+        <field name="side" id="3" type="Side" description="Order Side" />
+        <field name="qty" id="4" type="Quantity" description="Order Quantity" />
+        <field name="min_qty" id="5" type="Quantity" description="Minumim Order Quantity" />
+        <field name="display_qty" id="6" type="Quantity"
+            description="Display Order Quantity for Iceberg orders" />
+        <field name="price" id="7" type="Price" description="Order Price" />
+        <field name="tif" id="8" type="TIF" description="TIF" />
+        <field name="account" id="9" type="Account" description="Account" />
+        <field name="client_ts" id="10" type="Timestamp" description="Client time stamp" />
+        <field name="self_trade_policy" id="11" type="SelfTradePolicy"
+            description="Self trade policy" />
+    </sbe:message>
+
+    <!-- <sbe:message name="OrderAck" id="2" description="Order Acknowledgement">
+        <field name="clOrdId" id="1" type="uint64" description="Client Order ID" />
+        <field name="orderId" id="2" type="uint64" description="Exchange Order ID" />
+        <field name="execStatus" id="3" type="uint8" description="Execution Status" />
+    </sbe:message> -->
+</sbe:messageSchema>

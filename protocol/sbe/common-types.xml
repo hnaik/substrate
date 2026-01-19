@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+    <enum name="Side" encodingType="uint8">
+        <validValue name="Buy">1</validValue>
+        <validValue name="Sell">2</validValue>
+        <validValue name="ShortSell">5</validValue>
+    </enum>
+
+    <enum name="TIF" encodingType="uint8">
+        <validValue name="Day">1</validValue>
+        <validValue name="IOC">2</validValue>
+        <validValue name="FOK">3</validValue>
+        <validValue name="GTC">4</validValue>
+    </enum>
+
+    <enum name="SelfTradePolicy" encodingType="uint8">
+        <validValue name="CancelNew">1</validValue>
+        <validValue name="CancelOld">2</validValue>
+        <validValue name="Decrement">3</validValue>
+        <validValue name="Optional">4</validValue>
+    </enum>
+
+    <type name="ClientOrderID" primitiveType="uint64" semanticType="ClientOrderID" />
+    <type name="Quantity" primitiveType="int32" semanticType="Quantity" />
+    <type name="Price" primitiveType="double" semanticType="Price" />
+
+    <composite name="Timestamp">
+        <type name="time" primitiveType="uint64" semanticType="UTCTimestamp" />
+    </composite>
+    <composite name="Symbol">
+        <type name="data" primitiveType="char" length="8" semanticType="Symbol" />
+    </composite>
+    <composite name="Account">
+        <type name="data" primitiveType="char" length="16" semanticType="Account" />
+    </composite>
+</types>

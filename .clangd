@@ -1,0 +1,11 @@
+CompileFlags:
+    CompilationDatabase: build/gcc-debug
+    Add:
+        - "-I/home/hnaik/ws/rootmethod/substrate/.pixi/envs/default/include"
+
+Index:
+    Background: Build
+
+Diagnostics:
+    UnusedIncludes: Strict
+    MissingIncludes: Strict

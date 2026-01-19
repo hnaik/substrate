@@ -1,5 +1,5 @@
 file(GLOB SUBSTRATE_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/substrate/*.h")
 add_library(substrate INTERFACE)
 target_include_directories(substrate INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-# target_link_libraries(substrate PRIVATE sbs_internal)
+target_link_libraries(substrate INTERFACE substrate_internal)
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")

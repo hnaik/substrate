@@ -1,0 +1,3 @@
+#pragma once
+
+#define GIT_COMMIT_ID "@GIT_COMMIT_HASH@" // IWYU pragma: export

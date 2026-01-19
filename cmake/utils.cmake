@@ -8,9 +8,11 @@ function(copy_program name)
     )
 endfunction()
 
+find_package(spdlog REQUIRED)
+
 function(add_app name)
     add_executable(${name} ${name}/main.cpp ${ARGN})
-    target_link_libraries(${name} substrate substrate_sbe)
+    target_link_libraries(${name} substrate substrate_sbe spdlog::spdlog_header_only)
     copy_program(${name})
 endfunction()
 
@@ -35,3 +37,25 @@ add_compile_options(
         -Wduplicated-branches    # Warn on duplicated branches (GCC)
         -Wlogical-op             # Warn on suspicious logical operations (GCC)
 )
+
+find_package(Git QUIET)
+if(GIT_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_HASH
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    message(STATUS "Git commit hash: ${GIT_COMMIT_HASH}")
+else()
+    set(GIT_COMMIT_HASH "unknown")
+    message(STATUS "Git not found, using 'unknown' for version")
+endif()
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/version.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/generated/substrate/version.h"
+)
+
+# target_include_directories()

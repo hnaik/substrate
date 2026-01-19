@@ -17,10 +17,10 @@
 # with this program. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 # ============================================================================*/
 
+#include <substrate/application.h>
 #include <substrate/message_helpers.h>
 #include <substrate/messages.h>
-
-#include <iostream>
+#include <substrate/version.h>
 
 int main()
 {
@@ -37,6 +37,7 @@ int main()
                    Account::from_sv("1000123"),
                    Timestamp{123456},
                    SelfTradePolicy::cancel_new};
-    std::cout << "hello, substrate world!" << std::endl;
-    std::cout << order << std::endl;
+    Application<int> app{"Matching Engine"};
+    app.run();
+    INFO("order: {}", order.to_string());
 }

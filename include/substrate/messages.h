@@ -19,27 +19,13 @@
 
 #pragma once
 
-#include <ostream>
-#include <substrate/sbs_protocol/Accepted.h>
-#include <substrate/sbs_protocol/Account.h>
-#include <substrate/sbs_protocol/CancelOrder.h>
-#include <substrate/sbs_protocol/Canceled.h>
-#include <substrate/sbs_protocol/Execution.h>
-#include <substrate/sbs_protocol/NewOrder.h>
-#include <substrate/sbs_protocol/Rejected.h>
-#include <substrate/sbs_protocol/ReplaceOrder.h>
-#include <substrate/sbs_protocol/Replaced.h>
-#include <substrate/sbs_protocol/SelfTradePolicy.h>
-#include <substrate/sbs_protocol/Side.h>
-#include <substrate/sbs_protocol/Symbol.h>
-#include <substrate/sbs_protocol/TIF.h>
-#include <substrate/sbs_protocol/Timestamp.h>
+#include "protocol.h"
 
 #include <array>
-#include <concepts>
 #include <cstddef>
 #include <cstdint>
-#include <memory>
+#include <ostream>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -80,6 +66,12 @@ public:
     TypeWrapper() : u_{buf_begin(), size} {}
 
     // friend std::ostream& operator<<(std::ostream&, const wrapped_type&);
+    std::string to_string() const
+    {
+        std::ostringstream oss;
+        oss << u_;
+        return oss.str();
+    }
 
 protected:
     using underlying_type = UnderlyingType;

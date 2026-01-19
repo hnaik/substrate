@@ -97,7 +97,6 @@ function(add_sbe_schema schema_file)
             -Dsbe.target.language=Cpp
             -Dsbe.cpp.namespaces.collapse=true
             -Dsbe.cpp11.enabled=true
-            -Dsbe.generate.stubs=false
             -Dsbe.cpp.template.dir=${output_dir}/templates
             -jar ${SBE_JAR}
             ${schema_file}

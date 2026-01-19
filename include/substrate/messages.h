@@ -1,7 +1,15 @@
 #pragma once
 
+#include <ostream>
+#include <substrate/sbs_protocol/Accepted.h>
 #include <substrate/sbs_protocol/Account.h>
+#include <substrate/sbs_protocol/CancelOrder.h>
+#include <substrate/sbs_protocol/Canceled.h>
+#include <substrate/sbs_protocol/Execution.h>
 #include <substrate/sbs_protocol/NewOrder.h>
+#include <substrate/sbs_protocol/Rejected.h>
+#include <substrate/sbs_protocol/ReplaceOrder.h>
+#include <substrate/sbs_protocol/Replaced.h>
 #include <substrate/sbs_protocol/SelfTradePolicy.h>
 #include <substrate/sbs_protocol/Side.h>
 #include <substrate/sbs_protocol/Symbol.h>
@@ -16,6 +24,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 namespace substrate {
 using ClientOrderID = uint64_t;
@@ -46,12 +55,16 @@ enum class SelfTradePolicy : uint8_t
 
 template <typename WrappedType, typename UnderlyingType>
 class TypeWrapper {
+    using wrapped_type = WrappedType;
+
 public:
     TypeWrapper() : u_{buf_begin(), size} {}
 
+    // friend std::ostream& operator<<(std::ostream&, const wrapped_type&);
+
 protected:
     using underlying_type = UnderlyingType;
-    using wrapped_type = WrappedType;
+
     static constexpr std::size_t size = sizeof(underlying_type);
 
     char* buf_begin()
@@ -148,6 +161,38 @@ public:
     {
         return static_cast<SelfTradePolicy>(u_.self_trade_policy());
     }
+
+    friend std::ostream& operator<<(std::ostream& os, const NewOrder&);
+};
+
+class CancelOrder : public TypeWrapper<CancelOrder, sbs_protocol::CancelOrder> {
+    using base_type = TypeWrapper<CancelOrder, sbs_protocol::CancelOrder>;
+
+public:
+    CancelOrder(ClientOrderID clordid, Quantity qty, const Timestamp& client_ts)
+    {
+        u_.clordid(clordid).qty(qty);
+        u_.client_ts().time(client_ts.time());
+    }
+};
+
+class ReplaceOrder
+    : public TypeWrapper<ReplaceOrder, sbs_protocol::ReplaceOrder> {
+    using base_type = TypeWrapper<ReplaceOrder, sbs_protocol::ReplaceOrder>;
+
+public:
+    ReplaceOrder(ClientOrderID orig_clordid,
+                 ClientOrderID clordid,
+                 Quantity new_qty,
+                 Price new_price,
+                 const Timestamp& client_ts)
+    {
+        u_.orig_clordid(orig_clordid)
+            .clordid(clordid)
+            .new_qty(new_qty)
+            .new_price(new_price);
+        u_.client_ts().time(client_ts.time());
+    }
 };
 
 enum class RequestType : uint16_t
@@ -176,6 +221,43 @@ enum class ResponseType : uint16_t
     // Market data deltas
     book_delta,
     trade_print
+};
+
+using Requests = std::variant<NewOrder, CancelOrder, ReplaceOrder>;
+
+class Accepted : public TypeWrapper<Accepted, sbs_protocol::Accepted> {
+    using base_type = TypeWrapper<Accepted, sbs_protocol::Accepted>;
+
+public:
+    Accepted(ClientOrderID clordid) { u_.clordid(clordid); }
+};
+
+class Rejected : public TypeWrapper<Rejected, sbs_protocol::Rejected> {
+    using base_type = TypeWrapper<Rejected, sbs_protocol::Rejected>;
+
+public:
+    Rejected(ClientOrderID clordid) { u_.clordid(clordid); }
+};
+
+class Canceled : public TypeWrapper<Canceled, sbs_protocol::Canceled> {
+    using base_type = TypeWrapper<Canceled, sbs_protocol::Canceled>;
+
+public:
+    Canceled(ClientOrderID clordid) { u_.clordid(clordid); }
+};
+
+class Replaced : public TypeWrapper<Replaced, sbs_protocol::Replaced> {
+    using base_type = TypeWrapper<Replaced, sbs_protocol::Replaced>;
+
+public:
+    Replaced(ClientOrderID clordid) { u_.clordid(clordid); }
+};
+
+class Execution : public TypeWrapper<Execution, sbs_protocol::Execution> {
+    using base_type = TypeWrapper<Execution, sbs_protocol::Execution>;
+
+public:
+    Execution(ClientOrderID clordid) { u_.clordid(clordid); }
 };
 
 } // namespace substrate

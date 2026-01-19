@@ -10,7 +10,7 @@ endfunction()
 
 function(add_app name)
     add_executable(${name} ${name}/main.cpp ${ARGN})
-    target_link_libraries(${name} substrate)
+    target_link_libraries(${name} substrate substrate_sbe)
     copy_program(${name})
 endfunction()
 

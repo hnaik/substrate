@@ -35,9 +35,33 @@
             description="Self trade policy" />
     </sbe:message>
 
-    <!-- <sbe:message name="OrderAck" id="2" description="Order Acknowledgement">
-        <field name="clOrdId" id="1" type="uint64" description="Client Order ID" />
-        <field name="orderId" id="2" type="uint64" description="Exchange Order ID" />
-        <field name="execStatus" id="3" type="uint8" description="Execution Status" />
-    </sbe:message> -->
+    <sbe:message name="CancelOrder" id="2" description="Cancel Order">
+        <field name="clordid" id="1" type="ClientOrderID" description="Client Order ID" />
+        <field name="qty" id="2" type="Quantity" description="Order Quantity" />
+        <field name="client_ts" id="3" type="Timestamp" description="Client time stamp" />
+    </sbe:message>
+
+    <sbe:message name="ReplaceOrder" id="3" description="Replace Order">
+        <field name="orig_clordid" id="1" type="ClientOrderID" description="Client Order ID" />
+        <field name="clordid" id="2" type="ClientOrderID" description="Client Order ID" />
+        <field name="new_qty" id="3" type="Quantity" description="Order Quantity" />
+        <field name="new_price" id="4" type="Price" description="New price" />
+        <field name="client_ts" id="5" type="Timestamp" description="Client time stamp" />
+    </sbe:message>
+
+    <sbe:message name="Accepted" id="4">
+        <field name="clordid" id="1" type="ClientOrderID" description="Client Order ID" />
+    </sbe:message>
+    <sbe:message name="Rejected" id="5">
+        <field name="clordid" id="1" type="ClientOrderID" description="Client Order ID" />
+    </sbe:message>
+    <sbe:message name="Canceled" id="6">
+        <field name="clordid" id="1" type="ClientOrderID" description="Client Order ID" />
+    </sbe:message>
+    <sbe:message name="Replaced" id="7">
+        <field name="clordid" id="1" type="ClientOrderID" description="Client Order ID" />
+    </sbe:message>
+    <sbe:message name="Execution" id="8">
+        <field name="clordid" id="1" type="ClientOrderID" description="Client Order ID" />
+    </sbe:message>
 </sbe:messageSchema>

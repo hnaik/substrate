@@ -1,10 +1,8 @@
-#include <iostream>
 #include <substrate/price.h>
 
 #include <catch2/catch_test_macros.hpp>
-#include <substrate/sbs_protocol/Price.h>
 
-TEST_CASE("price")
+TEST_CASE("PriceBase")
 {
     using namespace substrate;
     auto p1 = PriceBase<double>::from_sv("123.25");

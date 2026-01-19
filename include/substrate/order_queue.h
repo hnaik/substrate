@@ -34,7 +34,7 @@
 namespace substrate {
 
 template <typename Key, typename Compare>
-class OrderBook {
+class OrderQueue {
     using TimePriorityQueue = std::list<std::unique_ptr<Order>>;
     using tqp_iterator = typename TimePriorityQueue::iterator;
     using Registry = std::unordered_map<ClientOrderID, tqp_iterator>;
@@ -42,7 +42,7 @@ class OrderBook {
 public:
     using key_type = Key;
 
-    OrderBook(const std::string& name) : name_{name} {}
+    OrderQueue(const std::string& name) : name_{name} {}
 
     [[nodiscard]] Order* top() const
     {

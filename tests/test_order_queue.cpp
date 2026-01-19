@@ -2,7 +2,7 @@
 #include <substrate/common_types.h>
 #include <substrate/messages.h>
 #include <substrate/order.h>
-#include <substrate/order_book.h>
+#include <substrate/order_queue.h>
 #include <substrate/price.h>
 
 #include <catch2/catch_test_macros.hpp>
@@ -13,8 +13,8 @@ TEST_CASE("OrderBook")
 {
     using namespace substrate;
 
-    using MinBook = OrderBook<substrate::Price, std::less<Price>>;
-    using MaxBook = OrderBook<substrate::Price, std::greater<Price>>;
+    using MinBook = OrderQueue<substrate::Price, std::less<Price>>;
+    using MaxBook = OrderQueue<substrate::Price, std::greater<Price>>;
 
     SECTION("Buy")
     {

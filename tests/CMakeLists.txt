@@ -2,7 +2,7 @@ file(GLOB TEST_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 add_executable(all_tests ${TEST_SRCS})
 target_link_libraries(all_tests PRIVATE 
     substrate
-    sbs_protocol
+    substrate_sbe
     Catch2::Catch2WithMain)
 copy_program(all_tests)
 

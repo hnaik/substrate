@@ -46,15 +46,15 @@ enum class SelfTradePolicy : uint8_t
 
 template <typename WrappedType, typename UnderlyingType>
 class TypeWrapper {
+public:
+    TypeWrapper() : u_{buf_begin(), size} {}
+
+protected:
     using underlying_type = UnderlyingType;
     using wrapped_type = WrappedType;
     static constexpr std::size_t size = sizeof(underlying_type);
     using wrapped_ptr = std::unique_ptr<wrapped_type>;
 
-public:
-    TypeWrapper() : u_{buf_begin(), size} {}
-
-protected:
     void init() { u_.wrapForEncode(buf_.data(), 0, size); }
     underlying_type& self() { return u_; }
     const underlying_type& self() const { return u_; }
@@ -66,25 +66,26 @@ protected:
     }
 
     underlying_type u_;
-    std::array<char, size> buf_{0};
+    std::array<char, size> buf_;
 };
 
 struct Timestamp : public TypeWrapper<Timestamp, sbs_protocol::Timestamp> {
     using base_type = TypeWrapper<Timestamp, sbs_protocol::Timestamp>;
     Timestamp() : base_type{} {}
     Timestamp(uint64_t time) : Timestamp{} { u_.time(time); }
+    uint64_t time() const { return u_.time(); }
 };
 
-template <typename T>
-concept WrappedStringBase =
-    (std::same_as<T, std::string> || std::same_as<T, std::string_view>);
+// template <typename T>
+// concept WrappedStringBase =
+//     (std::same_as<T, std::string> || std::same_as<T, std::string_view>);
 
 template <typename U>
 struct WrappedString : TypeWrapper<WrappedString<U>, U> {
     using base_type = TypeWrapper<WrappedString<U>, U>;
 
     template <typename T>
-        requires WrappedStringBase<T>
+    // requires WrappedStringBase<T>
     WrappedString(T&& s) : base_type{}
     {
         base_type::u_.putData(std::forward<T>(s));
@@ -131,9 +132,12 @@ public:
             .min_qty(min_qty)
             .display_qty(display_qty)
             .price(price)
-            .tif(static_cast<sbs_protocol::TIF::Value>(tif));
+            .tif(static_cast<sbs_protocol::TIF::Value>(tif))
+            .self_trade_policy(
+                static_cast<sbs_protocol::SelfTradePolicy::Value>(stp));
         u_.symbol().putData(symbol.sv());
         u_.account().putData(account.sv());
+        u_.client_ts().time(client_ts.time());
     }
     ClientOrderID clordid() const { return u_.clordid(); }
     Side side() const { return static_cast<Side>(u_.side()); }

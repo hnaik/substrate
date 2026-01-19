@@ -110,9 +110,15 @@ function(add_sbe_schema schema_file)
     add_custom_target(${schema_name}_sbe_gen ALL
         DEPENDS ${output_dir}/.timestamp
     )
+
+    add_library(${schema_name}_sbe INTERFACE)
+    add_dependencies(${schema_name}_sbe ${schema_name}_sbe_gen)
+
+    # Mark as SYSTEM to suppress warnings
+    target_include_directories(${schema_name}_sbe
+        SYSTEM INTERFACE
+        ${CMAKE_BINARY_DIR}/generated
+    )
     
     set(SBE_${schema_name}_INCLUDE_DIR ${output_dir} PARENT_SCOPE)
 endfunction()
-
-add_library(sbs_protocol INTERFACE)
-target_include_directories(sbs_protocol INTERFACE ${CMAKE_BINARY_DIR}/generated)

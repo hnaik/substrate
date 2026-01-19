@@ -17,29 +17,41 @@
 # with this program. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 # ============================================================================*/
 
-#include <substrate/application.h>
-#include <substrate/message_helpers.h>
-// #include <substrate/messages.h>
-#include <substrate/version.h>
+#pragma once
 
-int main()
+#include "price.h"
+#include "protocol.h"
+#include "wrapped_type.h"
+
+#include <cstdint>
+
+namespace substrate {
+using ClientOrderID = uint64_t;
+using Quantity = int32_t;
+
+enum class Side : uint8_t
 {
+    buy = sbs_protocol::Side::Buy,
+    sell = sbs_protocol::Side::Sell
+};
 
-    using namespace substrate;
+enum class TIF : uint8_t
+{
+    day = sbs_protocol::TIF::Day,
+    ioc = sbs_protocol::TIF::IOC,
+    fok = sbs_protocol::TIF::FOK,
+    gtc = sbs_protocol::TIF::GTC
+};
 
-    Application<int> app{"Matching Engine"};
-    app.run();
+enum class SelfTradePolicy : uint8_t
+{
+    cancel_new = sbs_protocol::SelfTradePolicy::CancelNew,
+    cancel_old = sbs_protocol::SelfTradePolicy::CancelOld,
+    decrement = sbs_protocol::SelfTradePolicy::Decrement,
+    optional = sbs_protocol::SelfTradePolicy::Optional
+};
 
-    // NewOrder order{12345,
-    //                Symbol::from_sv("AAPL"),
-    //                Side::buy,
-    //                Quantity{100},
-    //                Quantity{100},
-    //                Quantity{100},
-    //                Price{123.45},
-    //                TIF::day,
-    //                Account::from_sv("1000123"),
-    //                Timestamp{123456},
-    //                SelfTradePolicy::cancel_new};
-    // INFO("order: {}", order.to_string());
-}
+using Price = PriceBase<double>;
+using Symbol = WrappedString<sbs_protocol::Symbol>;
+using Account = WrappedString<sbs_protocol::Account>;
+} // namespace substrate

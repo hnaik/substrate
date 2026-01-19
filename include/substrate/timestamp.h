@@ -17,29 +17,18 @@
 # with this program. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
 # ============================================================================*/
 
-#include <substrate/application.h>
-#include <substrate/message_helpers.h>
-// #include <substrate/messages.h>
-#include <substrate/version.h>
+#pragma once
 
-int main()
-{
+#include "protocol.h"
+#include "wrapped_type.h"
 
-    using namespace substrate;
+#include <cstdint>
 
-    Application<int> app{"Matching Engine"};
-    app.run();
-
-    // NewOrder order{12345,
-    //                Symbol::from_sv("AAPL"),
-    //                Side::buy,
-    //                Quantity{100},
-    //                Quantity{100},
-    //                Quantity{100},
-    //                Price{123.45},
-    //                TIF::day,
-    //                Account::from_sv("1000123"),
-    //                Timestamp{123456},
-    //                SelfTradePolicy::cancel_new};
-    // INFO("order: {}", order.to_string());
-}
+namespace substrate {
+struct Timestamp : public WrappedType<Timestamp, sbs_protocol::Timestamp> {
+    using base_type = WrappedType<Timestamp, sbs_protocol::Timestamp>;
+    Timestamp() : base_type{} {}
+    Timestamp(uint64_t time) : Timestamp{} { u_.time(time); }
+    uint64_t time() const { return u_.time(); }
+};
+} // namespace substrate

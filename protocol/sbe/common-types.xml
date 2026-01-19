@@ -22,7 +22,10 @@
 
     <type name="ClientOrderID" primitiveType="uint64" semanticType="ClientOrderID" />
     <type name="Quantity" primitiveType="int32" semanticType="Quantity" />
-    <type name="Price" primitiveType="double" semanticType="Price" />
+
+    <composite name="Price">
+        <type name="value" primitiveType="int64" semanticType="Price" />
+    </composite>
 
     <composite name="Timestamp">
         <type name="time" primitiveType="uint64" semanticType="UTCTimestamp" />

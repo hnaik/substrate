@@ -26,6 +26,7 @@
 #include "replace_order.h"
 #include "wrapped_type.h"
 
+#include <concepts>
 #include <cstdint>
 #include <variant>
 
@@ -98,5 +99,10 @@ public:
 
 using Responses =
     std::variant<Accepted, Rejected, Canceled, Replaced, Execution>;
+
+template <typename T>
+concept IsResponse = std::same_as<T, Accepted> || std::same_as<T, Rejected> ||
+                     std::same_as<T, Canceled> || std::same_as<T, Replaced> ||
+                     std::same_as<T, Execution>;
 
 } // namespace substrate

@@ -22,7 +22,9 @@
 #include "common_types.h"
 #include "protocol.h"
 #include "timestamp.h"
+#include "utils.h"
 #include "wrapped_type.h"
+#include <optional>
 
 namespace substrate {
 
@@ -30,10 +32,16 @@ class CancelOrder : public WrappedType<CancelOrder, sbs_protocol::CancelOrder> {
     using base_type = WrappedType<CancelOrder, sbs_protocol::CancelOrder>;
 
 public:
-    CancelOrder(ClientOrderID clordid, Quantity qty, const Timestamp& client_ts)
+    CancelOrder() = default;
+    CancelOrder(ClientOrderID clordid,
+                std::optional<Quantity> qty = std::nullopt,
+                const Timestamp& client_ts = now_ns())
     {
-        u_.clordid(clordid).qty(qty);
+        u_.clordid(clordid);
         u_.client_ts().time(client_ts.time());
+        if(qty) {
+            u_.qty(qty.value());
+        }
     }
 };
 } // namespace substrate

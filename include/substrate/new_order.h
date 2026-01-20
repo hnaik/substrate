@@ -22,6 +22,7 @@
 #include "common_types.h"
 #include "protocol.h"
 #include "timestamp.h"
+#include "utils.h"
 #include "wrapped_type.h"
 
 #include <string>
@@ -43,10 +44,10 @@ public:
              Quantity min_qty,
              Quantity display_qty,
              const Price& price,
-             TIF tif,
-             const Account& account,
-             const Timestamp& client_ts,
-             SelfTradePolicy stp)
+             TIF tif = TIF::day,
+             const Account& account = Account{""},
+             const Timestamp& client_ts = now_ns(),
+             SelfTradePolicy stp = SelfTradePolicy::cancel_new)
         : NewOrder{}
     {
         u_.clordid(clordid)

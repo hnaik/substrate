@@ -20,10 +20,12 @@
 #pragma once
 
 #include "common_types.h"
+#include "string_helpers.h"
 
 #include <substrate/sbs_protocol/Side.h>
 
 #include <ostream>
+#include <string>
 #include <tuple>
 
 namespace substrate {
@@ -32,6 +34,19 @@ struct Order {
     Side side;
     Quantity qty;
     Price price;
+
+    inline static Order from_csv(const std::string& s)
+    {
+        auto t = substrate::split(s);
+        substrate::Side side =
+            t[1] == "B" ? substrate::Side::buy : substrate::Side::sell;
+
+        return substrate::Order{
+            substrate::ClientOrderID{std::stoul(t[0].c_str())},
+            side,
+            substrate::Quantity{std::stoi(t[2].c_str())},
+            substrate::Price{t[3]}};
+    }
 };
 
 inline bool operator==(const Order& o1, const Order& o2)

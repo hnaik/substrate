@@ -23,20 +23,14 @@ https://onepagecode.substack.com/p/electronic-market-structure-and-trading
 */
 
 #pragma once
-#include "cancel_order.h"
+
 #include "common_types.h"
-#include "logging.h"
-#include "new_order.h"
 #include "order.h"
 #include "order_queue.h"
-#include "replace_order.h"
-#include "utilities.h"
 
 #include <cstddef>
 #include <functional>
-#include <stdexcept>
 #include <string>
-#include <variant>
 
 namespace substrate {
 template <typename PriceKey, typename LogStream>
@@ -68,9 +62,12 @@ public:
 
     void handle_replace(const auto&) {}
 
-    size_t num_buy_levels() const { return bids_.size(); }
-    size_t num_sell_levels() const { return offers_.size(); }
-    size_t num_price_levels() const { return bids_.size() + offers_.size(); }
+    size_t num_buy_levels() const { return bids_.num_levels(); }
+    size_t num_sell_levels() const { return offers_.num_levels(); }
+    size_t num_price_levels() const
+    {
+        return bids_.num_levels() + offers_.num_levels();
+    }
 
 private:
     void resolve()

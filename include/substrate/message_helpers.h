@@ -21,22 +21,16 @@
 #include "common_types.h"
 #include "messages.h"
 #include "string_helpers.h"
+#include "substrate/cancel_order.h"
 #include "substrate/new_order.h"
-#include "substrate/timestamp.h"
+#include "substrate/replace_order.h"
 
+#include <format>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
 namespace substrate {
-
-// std::string_view to_string(Side);
-// std::string_view to_string(MsgType);
-// std::string to_string(OrderID);
-// std::string to_string(const AddOrderRequest&);
-// std::string to_string(const CancelOrderRequest&);
-// std::string to_string(const TradeEvent&);
-// std::string to_string(const OrderFullyFilled&);
-// std::string to_string(const OrderPartiallyFilled&);
 
 Side parse_side(const std::string&);
 inline Requests parse_request_csv(const std::string& csv)
@@ -52,35 +46,14 @@ inline Requests parse_request_csv(const std::string& csv)
                         qty,
                         qty,
                         qty,
-                        Price::from_string(tokens[4]),
-                        TIF::day,
-                        Account::from_sv("0000000"),
-                        Timestamp{123456},
-                        SelfTradePolicy::cancel_new};
+                        Price::from_string(tokens[4])};
+    } else if(tokens[0] == "CXL") {
+        return CancelOrder{ClientOrderID{std::stoul(tokens[1].c_str())}};
+    } else if(tokens[0] == "RPL") {
+        return ReplaceOrder{};
     }
 
-    return NewOrder();
+    throw std::runtime_error{std::format("Unknown request {}", tokens[0])};
 }
-
-// AddOrderRequest parse_add_order_request(const std::string&);
-// CancelOrderRequest parse_cancel_order_request(const std::string&);
-
-// Requests parse_input(const std::string&);
-
-// TradeEvent make_trade_event(Quantity, const Price&);
-// OrderPartiallyFilled make_partial(OrderID, Quantity);
-// OrderFullyFilled make_fill(OrderID);
-
-// template <typename T>
-// concept OutputMessage = std::same_as<T, TradeEvent> ||           //
-//                         std::same_as<T, OrderPartiallyFilled> || //
-//                         std::same_as<T, OrderFullyFilled>;
-// template <typename T>
-//     requires OutputMessage<T>
-// std::ostream& operator<<(std::ostream& os, const T& value)
-// {
-//     os << to_string(value);
-//     return os;
-// }
 
 } // namespace substrate

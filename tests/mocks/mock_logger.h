@@ -52,10 +52,10 @@ private:
 };
 
 template <typename T, typename U>
-// requires substrate::Responses<T>
-MockLogger<U>& operator<<(MockLogger<U>& logger, const T&)
+    requires IsResponse<T>
+MockLogger<U>& operator<<(MockLogger<U>& logger, const T& value)
 {
-    // logger << substrate::to_string(value);
+    logger << value.to_string();
     return logger;
 }
 

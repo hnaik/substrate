@@ -20,25 +20,65 @@
 #pragma once
 
 #include "common_types.h"
+#include "string_helpers.h"
 
+#include <format>
+#include <substrate/sbs_protocol/Side.h>
+
+#include <ostream>
+#include <string>
 #include <tuple>
 
 namespace substrate {
 struct Order {
     ClientOrderID clordid;
+    Side side;
     Quantity qty;
     Price price;
+
+    inline static Order from_csv(const std::string& s)
+    {
+        auto t = substrate::split(s);
+        substrate::Side side =
+            t[1] == "B" ? substrate::Side::buy : substrate::Side::sell;
+
+        return substrate::Order{
+            substrate::ClientOrderID{std::stoul(t[0].c_str())},
+            side,
+            substrate::Quantity{std::stoi(t[2].c_str())},
+            substrate::Price{t[3]}};
+    }
+
+    std::string to_string() const
+    {
+        return std::format("Order({}|{:4s}|Qty:{:5d}|${:6.2f})",
+                           clordid,
+                           side::to_string(this->side),
+                           qty,
+                           price.display_value());
+    }
 };
 
 inline bool operator==(const Order& o1, const Order& o2)
 {
-    return std::tie(o1.clordid, o1.qty, o1.price) ==
-           std::tie(o2.clordid, o2.qty, o2.price);
+    return std::tie(o1.clordid, o1.side, o1.qty, o1.price) ==
+           std::tie(o2.clordid, o2.side, o2.qty, o2.price);
 }
 
-inline bool operator!=(const Order& o1, const Order& o2)
+inline bool operator!=(const Order& o1, const Order& o2) { return !(o1 == o2); }
+
+inline std::ostream& operator<<(std::ostream& os, const Order& order)
 {
-    return std::tie(o1.clordid, o1.qty, o1.price) !=
-           std::tie(o2.clordid, o2.qty, o2.price);
+    os << "Order(" << order.clordid << ";" << side::to_string(order.side) << ";"
+       << order.qty << ";" << order.price.display_value() << ")";
+    return os;
 }
+
+// inline std::ostream& operator<<(std::ostream& os, Order* o)
+// {
+//     os << "Order(" << o->clordid << ";"
+//        << static_cast<sbs_protocol::Side::Value>(o->side) << ";" << o->qty
+//        << ";" << o->price.display_value() << ")";
+//     return os;
+// }
 } // namespace substrate

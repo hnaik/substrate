@@ -18,7 +18,42 @@
 # ============================================================================*/
 
 #pragma once
+#include "common_types.h"
+#include "messages.h"
+#include "string_helpers.h"
+#include "substrate/cancel_order.h"
+#include "substrate/new_order.h"
+#include "substrate/replace_order.h"
+
+#include <format>
+#include <stdexcept>
+#include <string>
+#include <string_view>
 
 namespace substrate {
+
+Side parse_side(const std::string&);
+inline Requests parse_request_csv(const std::string& csv)
+{
+    auto tokens = split(csv);
+    if(tokens[0] == "ADD") {
+        ClientOrderID clordid{std::stoul(tokens[1].c_str())};
+        Side side = tokens[2] == "0" ? Side::buy : Side::sell;
+        Quantity qty{std::stoi(tokens[3].c_str())};
+        return NewOrder{clordid,
+                        Symbol::from_sv("AAPL"),
+                        side,
+                        qty,
+                        qty,
+                        qty,
+                        Price::from_string(tokens[4])};
+    } else if(tokens[0] == "CXL") {
+        return CancelOrder{ClientOrderID{std::stoul(tokens[1].c_str())}};
+    } else if(tokens[0] == "RPL") {
+        return ReplaceOrder{};
+    }
+
+    throw std::runtime_error{std::format("Unknown request {}", tokens[0])};
+}
 
 } // namespace substrate

@@ -19,18 +19,15 @@
 
 #pragma once
 
-#include "cancel_order.h"
+#include "cancel_order.h" // IWYU pragma: export
 #include "common_types.h"
 #include "new_order.h"
 #include "protocol.h"
 #include "replace_order.h"
 #include "wrapped_type.h"
 
+#include <concepts>
 #include <cstdint>
-#include <ostream>
-#include <string>
-#include <string_view>
-#include <utility>
 #include <variant>
 
 namespace substrate {
@@ -99,5 +96,13 @@ class Execution : public WrappedType<Execution, sbs_protocol::Execution> {
 public:
     Execution(ClientOrderID clordid) { u_.clordid(clordid); }
 };
+
+using Responses =
+    std::variant<Accepted, Rejected, Canceled, Replaced, Execution>;
+
+template <typename T>
+concept IsResponse = std::same_as<T, Accepted> || std::same_as<T, Rejected> ||
+                     std::same_as<T, Canceled> || std::same_as<T, Replaced> ||
+                     std::same_as<T, Execution>;
 
 } // namespace substrate

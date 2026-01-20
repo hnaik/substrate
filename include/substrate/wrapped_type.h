@@ -99,4 +99,30 @@ struct WrappedString : WrappedType<WrappedString<U>, U> {
         return WrappedString{sv};
     }
 };
+
+// template <typename U>
+// class WrappedValue : WrappedType<WrappedValue<U>, U> {
+// public:
+//     using base_type = WrappedType<WrappedValue<U>, U>;
+//     template <typename T>
+//     WrappedValue(T v)
+//     {
+//         this->u_.value(v);
+//     }
+
+//     auto value() const { return this->u_.value(); }
+//     std::string to_string() const
+//     {
+//         return std::format("{}({})", this->name_, value());
+//     }
+
+//     std::ostream& operator<<(std::ostream& os)
+//     {
+//         os << to_string();
+//         return os;
+//     }
+
+// private:
+//     std::string name_;
+// };
 } // namespace substrate

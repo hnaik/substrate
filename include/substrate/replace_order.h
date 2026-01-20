@@ -22,6 +22,7 @@
 #include "common_types.h"
 #include "protocol.h"
 #include "timestamp.h"
+#include "utils.h"
 #include "wrapped_type.h"
 
 namespace substrate {
@@ -31,11 +32,12 @@ class ReplaceOrder
     using base_type = WrappedType<ReplaceOrder, sbs_protocol::ReplaceOrder>;
 
 public:
+    ReplaceOrder() = default;
     ReplaceOrder(ClientOrderID orig_clordid,
                  ClientOrderID clordid,
                  Quantity new_qty,
                  Price new_price,
-                 const Timestamp& client_ts)
+                 const Timestamp& client_ts = now_ns())
     {
         u_.orig_clordid(orig_clordid).clordid(clordid).new_qty(new_qty);
         u_.client_ts().time(client_ts.time());

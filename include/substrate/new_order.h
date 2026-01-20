@@ -22,14 +22,12 @@
 #include "common_types.h"
 #include "protocol.h"
 #include "timestamp.h"
+#include "utils.h"
 #include "wrapped_type.h"
 
-#include <cstdint>
-#include <ostream>
 #include <string>
-#include <string_view>
-#include <utility>
-#include <variant>
+#include <substrate/sbs_protocol/NewOrder.h>
+#include <substrate/sbs_protocol/Price.h>
 
 namespace substrate {
 
@@ -46,10 +44,10 @@ public:
              Quantity min_qty,
              Quantity display_qty,
              const Price& price,
-             TIF tif,
-             const Account& account,
-             const Timestamp& client_ts,
-             SelfTradePolicy stp)
+             TIF tif = TIF::day,
+             const Account& account = Account{""},
+             const Timestamp& client_ts = now_ns(),
+             SelfTradePolicy stp = SelfTradePolicy::cancel_new)
         : NewOrder{}
     {
         u_.clordid(clordid)
@@ -67,17 +65,32 @@ public:
     }
     ClientOrderID clordid() const { return u_.clordid(); }
     Side side() const { return static_cast<Side>(u_.side()); }
-    std::string symbol() { return u_.symbol().getDataAsString(); }
+    std::string symbol() const
+    {
+        return const_cast<underlying_type&>(u_).symbol().getDataAsString();
+    }
     Quantity qty() const { return u_.qty(); }
     Quantity min_qty() const { return u_.min_qty(); }
     Quantity display_qty() const { return u_.display_qty(); }
-    Price price() { return Price::from_underlying(u_.price()); }
+    Price price() const
+    {
+        return Price::from_underlying(const_cast<underlying_type&>(u_).price());
+    }
     TIF tif() const { return static_cast<TIF>(u_.tif()); }
-    std::string account() { return u_.account().getDataAsString(); }
-    Timestamp client_ts() { return u_.client_ts().time(); }
+    std::string account() const
+    {
+        return const_cast<underlying_type&>(u_).account().getDataAsString();
+    }
+    Timestamp client_ts() const
+    {
+        return const_cast<underlying_type&>(u_).client_ts().time();
+    }
     SelfTradePolicy stp() const
     {
         return static_cast<SelfTradePolicy>(u_.self_trade_policy());
     }
+
+private:
+    underlying_type& u() { return u_; }
 };
 } // namespace substrate

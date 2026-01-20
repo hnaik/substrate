@@ -1,4 +1,7 @@
+#include <substrate/common_types.h>
 #include <substrate/messages.h>
+#include <substrate/new_order.h>
+#include <substrate/timestamp.h>
 
 #include <catch2/catch_test_macros.hpp>
 

@@ -19,29 +19,27 @@
 
 #pragma once
 
-#include "common_types.h"
-#include "protocol.h"
-#include "timestamp.h"
-#include "utils.h"
-#include "wrapped_type.h"
-#include <optional>
+#include <concepts>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace substrate {
+// template <typename T>
+//     requires(!std::same_as<T, std::string>)
+// std::string to_string(T&& value)
+// {
+//     return std::to_string(std::forward<T>(value));
+// }
 
-class CancelOrder : public WrappedType<CancelOrder, sbs_protocol::CancelOrder> {
-    using base_type = WrappedType<CancelOrder, sbs_protocol::CancelOrder>;
+// template <typename T>
+//     requires(!std::same_as<T, std::string>)
+// std::ostream& operator<<(std::ostream& os, const T& value)
+// {
+//     os << value.to_string();
+//     return os;
+// }
 
-public:
-    CancelOrder() = default;
-    CancelOrder(ClientOrderID clordid,
-                std::optional<Quantity> qty = std::nullopt,
-                const Timestamp& client_ts = now_ns())
-    {
-        u_.clordid(clordid);
-        u_.client_ts().time(client_ts.time());
-        if(qty) {
-            u_.qty(qty.value());
-        }
-    }
-};
+std::vector<std::string> split(const std::string& s, char delim = ',');
 } // namespace substrate

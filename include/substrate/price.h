@@ -38,10 +38,7 @@ public:
     using primitive_type = int64_t;
 
     PriceBase() = default;
-    explicit PriceBase(underlying_type price)
-    {
-        underlying_type::reset(std::move(price));
-    }
+    explicit PriceBase(underlying_type price) { this->u_.value(price.value()); }
     explicit PriceBase(std::string_view sv)
     {
         auto v = static_cast<primitive_type>(std::stod(sv.data())) * Denom;
@@ -93,7 +90,7 @@ public:
 };
 
 template <typename W, ssize_t N>
-std::ostream& operator<<(std::ostream& os, const PriceBase<W, N>& p)
+inline std::ostream& operator<<(std::ostream& os, const PriceBase<W, N>& p)
 {
     os << p.display_value();
     return os;

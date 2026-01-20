@@ -19,29 +19,13 @@
 
 #pragma once
 
-#include "common_types.h"
-#include "protocol.h"
-#include "timestamp.h"
-#include "utils.h"
-#include "wrapped_type.h"
-#include <optional>
-
 namespace substrate {
+// From https://en.cppreference.com/w/cpp/utility/variant/visit2.html
 
-class CancelOrder : public WrappedType<CancelOrder, sbs_protocol::CancelOrder> {
-    using base_type = WrappedType<CancelOrder, sbs_protocol::CancelOrder>;
-
-public:
-    CancelOrder() = default;
-    CancelOrder(ClientOrderID clordid,
-                std::optional<Quantity> qty = std::nullopt,
-                const Timestamp& client_ts = now_ns())
-    {
-        u_.clordid(clordid);
-        u_.client_ts().time(client_ts.time());
-        if(qty) {
-            u_.qty(qty.value());
-        }
-    }
+template <typename... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
 };
+template <typename... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
 } // namespace substrate

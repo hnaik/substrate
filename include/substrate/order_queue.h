@@ -21,11 +21,14 @@
 
 #include "common_types.h"
 #include "order.h"
+#include "substrate/application.h"
+#include "substrate/logging.h"
 
 #include <cstddef>
 #include <list>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -34,7 +37,7 @@
 namespace substrate {
 
 template <typename Key, typename Compare>
-class OrderBook {
+class OrderQueue {
     using TimePriorityQueue = std::list<std::unique_ptr<Order>>;
     using tqp_iterator = typename TimePriorityQueue::iterator;
     using Registry = std::unordered_map<ClientOrderID, tqp_iterator>;
@@ -42,7 +45,7 @@ class OrderBook {
 public:
     using key_type = Key;
 
-    OrderBook(const std::string& name) : name_{name} {}
+    OrderQueue(const std::string& name) : name_{name} {}
 
     [[nodiscard]] Order* top() const
     {
@@ -79,16 +82,38 @@ public:
         }
     }
 
-    void add(const key_type& price, ClientOrderID clordid, Quantity quantity)
+    void
+    add(ClientOrderID clordid, Side side, Quantity qty, const key_type& price)
     {
+        if(registry_.contains(clordid)) {
+            WARN("ClOrdID {} exists, not adding", clordid);
+            return;
+        }
+
         if(!q_.contains(price)) {
             q_.emplace(price, TimePriorityQueue());
         }
-        registry_[clordid] = q_.at(price).emplace(
-            end(q_.at(price)), new Order{clordid, quantity, price});
+
+        DEBUG("Adding ClOrdID {}", clordid);
+        auto itr = q_.find(price);
+        registry_[clordid] = itr->second.emplace(
+            end(itr->second), new Order{clordid, side, qty, price});
     }
 
-    size_t size() const { return q_.size(); }
+    void add(const Order& order)
+    {
+        add(order.clordid, order.side, order.qty, order.price);
+    }
+
+    size_t num_levels() const { return q_.size(); }
+    size_t size() const
+    {
+        return std::accumulate(
+            begin(q_),
+            end(q_),
+            static_cast<size_t>(0),
+            [](size_t p, const auto& tq) { return p + tq.second.size(); });
+    }
     bool empty() const { return size() == 0; }
 
     bool has_order(ClientOrderID clordid) const

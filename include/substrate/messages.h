@@ -66,35 +66,35 @@ class Accepted : public WrappedType<Accepted, sbs_protocol::Accepted> {
     using base_type = WrappedType<Accepted, sbs_protocol::Accepted>;
 
 public:
-    Accepted(ClientOrderID clordid) { u_.clordid(clordid); }
+    Accepted(ClOrdID clordid) { u_.clordid(clordid); }
 };
 
 class Rejected : public WrappedType<Rejected, sbs_protocol::Rejected> {
     using base_type = WrappedType<Rejected, sbs_protocol::Rejected>;
 
 public:
-    Rejected(ClientOrderID clordid) { u_.clordid(clordid); }
+    Rejected(ClOrdID clordid) { u_.clordid(clordid); }
 };
 
 class Canceled : public WrappedType<Canceled, sbs_protocol::Canceled> {
     using base_type = WrappedType<Canceled, sbs_protocol::Canceled>;
 
 public:
-    Canceled(ClientOrderID clordid) { u_.clordid(clordid); }
+    Canceled(ClOrdID clordid) { u_.clordid(clordid); }
 };
 
 class Replaced : public WrappedType<Replaced, sbs_protocol::Replaced> {
     using base_type = WrappedType<Replaced, sbs_protocol::Replaced>;
 
 public:
-    Replaced(ClientOrderID clordid) { u_.clordid(clordid); }
+    Replaced(ClOrdID clordid) { u_.clordid(clordid); }
 };
 
 class Execution : public WrappedType<Execution, sbs_protocol::Execution> {
     using base_type = WrappedType<Execution, sbs_protocol::Execution>;
 
 public:
-    Execution(ClientOrderID clordid) { u_.clordid(clordid); }
+    Execution(ClOrdID clordid) { u_.clordid(clordid); }
 };
 
 using Responses =

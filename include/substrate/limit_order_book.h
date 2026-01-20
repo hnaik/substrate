@@ -28,8 +28,6 @@ https://onepagecode.substack.com/p/electronic-market-structure-and-trading
 #include "logging.h"
 #include "order.h"
 #include "order_queue.h"
-#include "responses/execution.h"
-#include "substrate/messages.h"
 #include "substrate/responses/trade_id.h"
 #include "utils.h"
 
@@ -58,7 +56,7 @@ public:
         resolve();
     }
 
-    void handle_cancel(ClientOrderID clordid)
+    void handle_cancel(ClOrdID clordid)
     {
         if(bids_.has_order(clordid)) {
             bids_.remove_order(clordid);

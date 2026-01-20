@@ -37,7 +37,7 @@ inline Requests parse_request_csv(const std::string& csv)
 {
     auto tokens = split(csv);
     if(tokens[0] == "ADD") {
-        ClientOrderID clordid{std::stoul(tokens[1].c_str())};
+        ClOrdID clordid{std::stoul(tokens[1].c_str())};
         Side side = tokens[2] == "0" ? Side::buy : Side::sell;
         Quantity qty{std::stoi(tokens[3].c_str())};
         return NewOrder{clordid,
@@ -48,7 +48,7 @@ inline Requests parse_request_csv(const std::string& csv)
                         qty,
                         Price::from_string(tokens[4])};
     } else if(tokens[0] == "CXL") {
-        return CancelOrder{ClientOrderID{std::stoul(tokens[1].c_str())}};
+        return CancelOrder{ClOrdID{std::stoul(tokens[1].c_str())}};
     } else if(tokens[0] == "RPL") {
         return ReplaceOrder{};
     }

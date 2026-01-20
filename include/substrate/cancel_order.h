@@ -33,7 +33,7 @@ class CancelOrder : public WrappedType<CancelOrder, sbs_protocol::CancelOrder> {
 
 public:
     CancelOrder() = default;
-    CancelOrder(ClientOrderID clordid,
+    CancelOrder(ClOrdID clordid,
                 std::optional<Quantity> qty = std::nullopt,
                 const Timestamp& client_ts = now_ns())
     {

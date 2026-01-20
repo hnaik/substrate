@@ -33,8 +33,8 @@ class ReplaceOrder
 
 public:
     ReplaceOrder() = default;
-    ReplaceOrder(ClientOrderID orig_clordid,
-                 ClientOrderID clordid,
+    ReplaceOrder(ClOrdID orig_clordid,
+                 ClOrdID clordid,
                  Quantity new_qty,
                  Price new_price,
                  const Timestamp& client_ts = now_ns())

@@ -31,7 +31,7 @@
 
 namespace substrate {
 struct Order {
-    ClientOrderID clordid;
+    ClOrdID clordid;
     Side side;
     Quantity qty;
     Price price;
@@ -42,11 +42,10 @@ struct Order {
         substrate::Side side =
             t[1] == "B" ? substrate::Side::buy : substrate::Side::sell;
 
-        return substrate::Order{
-            substrate::ClientOrderID{std::stoul(t[0].c_str())},
-            side,
-            substrate::Quantity{std::stoi(t[2].c_str())},
-            substrate::Price{t[3]}};
+        return substrate::Order{substrate::ClOrdID{std::stoul(t[0].c_str())},
+                                side,
+                                substrate::Quantity{std::stoi(t[2].c_str())},
+                                substrate::Price{t[3]}};
     }
 
     std::string to_string() const
@@ -73,12 +72,4 @@ inline std::ostream& operator<<(std::ostream& os, const Order& order)
        << order.qty << ";" << order.price.display_value() << ")";
     return os;
 }
-
-// inline std::ostream& operator<<(std::ostream& os, Order* o)
-// {
-//     os << "Order(" << o->clordid << ";"
-//        << static_cast<sbs_protocol::Side::Value>(o->side) << ";" << o->qty
-//        << ";" << o->price.display_value() << ")";
-//     return os;
-// }
 } // namespace substrate

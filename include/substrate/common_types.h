@@ -29,7 +29,7 @@
 #include <substrate/sbs_protocol/Side.h>
 
 namespace substrate {
-using ClientOrderID = uint64_t;
+using ClOrdID = uint64_t;
 using Quantity = int32_t;
 
 enum class Side : uint8_t

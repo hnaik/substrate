@@ -6,6 +6,12 @@
 
 #include "substrate/sbs_protocol/Execution.h"
 
+#include <format>
+#include <json/json.h>
+
+#include <ostream>
+#include <string>
+
 namespace substrate::responses {
 
 class Execution
@@ -25,6 +31,41 @@ public:
         u_.price().value(price.value());
     }
 
-private:
+    ClientOrderID clordid() const { return u_.clordid(); }
+
+    TradeID tradeid() const
+    {
+        return TradeID{const_cast<underlying_type&>(u_).tradeid()};
+    }
+
+    Symbol symbol() const
+    {
+        return Symbol{const_cast<underlying_type&>(u_).symbol().data()};
+    }
+
+    Price price() const
+    {
+        return Price{const_cast<underlying_type&>(u_).price()};
+    }
+
+    inline std::string to_string() const
+    {
+        return std::format(
+            "Execution(Sym={}|ClOrdID={}|TradeID={}|Price={:.2f}|"
+            "Qty={}|LeavesQty={})",
+            symbol().str(),
+            u_.clordid(),
+            tradeid().value(),
+            price().display_value(),
+            u_.qty(),
+            u_.leaves_qty());
+    }
+
+    inline std::ostream& operator<<(std::ostream& os)
+    {
+        os << u_;
+        return os;
+    }
 };
+
 } // namespace substrate::responses

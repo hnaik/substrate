@@ -29,16 +29,24 @@ https://onepagecode.substack.com/p/electronic-market-structure-and-trading
 #include "order.h"
 #include "order_queue.h"
 #include "responses/execution.h"
+#include "substrate/messages.h"
+#include "substrate/responses/trade_id.h"
+#include "utils.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <functional>
 #include <string>
+#include <utility>
 
 namespace substrate {
 template <typename PriceKey, typename ExecutionQueue>
 class LimitOrderBook {
 public:
-    LimitOrderBook(ExecutionQueue& eq) : eq_{eq} {}
+    LimitOrderBook(const Symbol& symbol, ExecutionQueue& eq)
+        : symbol_{symbol}, eq_{eq}
+    {
+    }
 
     void handle_add(const Order& order)
     {
@@ -96,25 +104,49 @@ private:
 
     void publish_trade(Order* o1, Order* o2, const Price& price)
     {
-        // eq_.push_back(responses::Execution{});
-        // logger_.info() << make_trade_event(o1->qty, price) << std::endl;
+
+        // Quantity qty = o1->qty < o2->qty ? o1->qty : o2->qty;
+        // Quantity leaves = o1->qty < o2->qty ? o2->qty - qty : o2->qty - qty;
+        // responses::Execution e1{
+        //     o1->clordid, TradeID{now_ns()}, symbol_, price, qty, leaves};
+        // responses::Execution e2{
+        //     o2->clordid, TradeID{now_ns()}, symbol_, price, qty, leaves};
+
+        // TradeID tid{now_ns()};
 
         if(o1->clordid < o2->clordid) {
             INFO("TRADE {} x {} FillPrice:{:.2f}",
                  o2->to_string(),
                  o1->to_string(),
                  price.display_value());
-            // publish_fill(o2, o1->qty);
-            // logger_.info() << make_fill(o1->orderid) << std::endl;
+            // pub_trade(o2, o1, price, qty, leaves);
+            // eq_.emplace_back(o2->clordid, tid, symbol_, price, qty, )
+            pub_trade(o2, o1, price);
         } else {
             INFO("TRADE {} x {} FillPrice:{:.2f}",
                  o1->to_string(),
                  o2->to_string(),
                  price.display_value());
-
-            // logger_.info() << make_fill(o1->orderid) << std::endl;
-            // publish_fill(o2, o1->qty);
+            pub_trade(o1, o2, price);
         }
+    }
+
+    void pub_trade(Order* o1, Order* o2, const Price& price)
+    {
+        TradeID tid{now_ns()};
+        Quantity qty = o1->qty < o2->qty ? o1->qty : o2->qty;
+        eq_.emplace_back(o1->clordid,
+                         tid,
+                         symbol_,
+                         price,
+                         qty,
+                         std::max(0, o1->qty - o2->qty));
+        eq_.emplace_back(o2->clordid,
+                         tid,
+                         symbol_,
+                         price,
+                         qty,
+                         std::max(0, o2->qty - o2->qty));
     }
 
     void publish_fill(Order*, Quantity)
@@ -127,6 +159,7 @@ private:
         // }
     }
 
+    Symbol symbol_;
     ExecutionQueue& eq_;
     OrderQueue<Price, std::greater<Price>> bids_{"bids"};
     OrderQueue<Price, std::less<Price>> offers_{"offers"};

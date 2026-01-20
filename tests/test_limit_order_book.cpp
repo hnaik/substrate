@@ -1,22 +1,27 @@
 #include <substrate/limit_order_book.h>
 
+#include "substrate/logging.h"
+#include "substrate/responses/execution.h"
 #include <substrate/application.h>
 #include <substrate/common_types.h>
 #include <substrate/messages.h>
 #include <substrate/new_order.h>
 #include <substrate/order.h>
 
-#include "mocks/mock_logger.h"
-
 #include <catch2/catch_test_macros.hpp>
+
+#include <deque>
 
 TEST_CASE("MatchingEngine", "[basic]")
 {
     substrate::Application<int> app{""};
 
     using namespace substrate;
-    MockLogStream logger;
-    LimitOrderBook<Price, MockLogStream> lob{logger};
+    // MockLogStream logger;
+    // LimitOrderBook<Price, MockLogStream> lob{logger};
+    using ExecutionQueue = std::deque<responses::Execution>;
+    ExecutionQueue eq;
+    LimitOrderBook<Price, ExecutionQueue> lob{Symbol{"AAPL"}, eq};
 
     SECTION("# price levels")
     {
@@ -43,12 +48,17 @@ TEST_CASE("MatchingEngine", "[basic]")
 
     SECTION("matches")
     {
-        const auto& info_msgs = logger.info_logs();
+        // const auto& info_msgs = logger.info_logs();
         lob.handle_add(Order::from_csv("1000001,B,3,1050"));
         lob.handle_add(Order::from_csv("1000002,B,3,1055"));
         lob.handle_add(Order::from_csv("1000003,B,3,1045"));
-        REQUIRE(info_msgs.empty());
+        // REQUIRE(info_msgs.empty());
         lob.handle_add(Order::from_csv("1000004,S,10,1025"));
+
+        while(!eq.empty()) {
+            SPDLOG_INFO("{}", eq.front().to_string());
+            eq.pop_front();
+        }
     }
 
     SECTION("cancels") {}

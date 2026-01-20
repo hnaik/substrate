@@ -37,7 +37,7 @@ class NewOrder : public WrappedType<NewOrder, sbs_protocol::NewOrder> {
 public:
     NewOrder() = default;
 
-    NewOrder(ClientOrderID clordid,
+    NewOrder(ClOrdID clordid,
              const Symbol& symbol,
              Side side,
              Quantity qty,
@@ -63,7 +63,7 @@ public:
         u_.client_ts().time(client_ts.time());
         u_.price().value(price.value());
     }
-    ClientOrderID clordid() const { return u_.clordid(); }
+    ClOrdID clordid() const { return u_.clordid(); }
     Side side() const { return static_cast<Side>(u_.side()); }
     std::string symbol() const
     {

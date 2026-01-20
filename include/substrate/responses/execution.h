@@ -18,7 +18,7 @@ class Execution
     : public substrate::WrappedType<Execution, sbs_protocol::Execution> {
 public:
     Execution() = default;
-    Execution(ClientOrderID clordid,
+    Execution(ClOrdID clordid,
               const TradeID& tradeid,
               const Symbol& symbol,
               const Price& price,
@@ -31,7 +31,7 @@ public:
         u_.price().value(price.value());
     }
 
-    ClientOrderID clordid() const { return u_.clordid(); }
+    ClOrdID clordid() const { return u_.clordid(); }
 
     TradeID tradeid() const
     {

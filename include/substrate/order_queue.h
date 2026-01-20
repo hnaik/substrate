@@ -40,7 +40,7 @@ template <typename Key, typename Compare>
 class OrderQueue {
     using TimePriorityQueue = std::list<std::unique_ptr<Order>>;
     using tqp_iterator = typename TimePriorityQueue::iterator;
-    using Registry = std::unordered_map<ClientOrderID, tqp_iterator>;
+    using Registry = std::unordered_map<ClOrdID, tqp_iterator>;
 
 public:
     using key_type = Key;
@@ -82,8 +82,7 @@ public:
         }
     }
 
-    void
-    add(ClientOrderID clordid, Side side, Quantity qty, const key_type& price)
+    void add(ClOrdID clordid, Side side, Quantity qty, const key_type& price)
     {
         if(registry_.contains(clordid)) {
             WARN("ClOrdID {} exists, not adding", clordid);
@@ -116,12 +115,12 @@ public:
     }
     bool empty() const { return size() == 0; }
 
-    bool has_order(ClientOrderID clordid) const
+    bool has_order(ClOrdID clordid) const
     {
         return registry_.contains(clordid);
     }
 
-    void remove_order(ClientOrderID clordid)
+    void remove_order(ClOrdID clordid)
     {
         auto itr = registry_.find(clordid);
         if(itr == end(registry_)) {

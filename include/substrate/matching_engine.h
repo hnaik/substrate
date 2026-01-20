@@ -28,13 +28,13 @@ https://onepagecode.substack.com/p/electronic-market-structure-and-trading
 #include "message_helpers.h"
 #include "new_order.h"
 #include "replace_order.h"
+#include "substrate/common_types.h"
 #include "utilities.h"
 
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
-#include <variant>
 
 namespace substrate {
 template <typename PriceKey, typename LogStream>
@@ -46,20 +46,24 @@ public:
             auto request = parse_request_csv(input);
 
             std::visit(
-                overloaded{
-                    [&](const NewOrder& req) { handle_add(req); },
-                    [&](const CancelOrder& req) { handle_cancel(req); },
-                    [&](const ReplaceOrder& req) { handle_replace(req); }},
+                overloaded{[&](NewOrder req) { handle_add(req); },
+                           [&](CancelOrder req) { handle_cancel(req); },
+                           [&](ReplaceOrder req) { handle_replace(req); }},
                 request);
         } catch(std::domain_error& err) {
             DEBUG(err.what());
         } catch(std::invalid_argument&) {
-            logger_.err() << "Unknown message type: " << input << std::endl;
+            // logger_.err() << "Unknown message type: " << input << std::endl;
         }
     }
 
 private:
+    void handle_add(NewOrder) {}
+    void handle_cancel(CancelOrder) {}
+    void handle_replace(ReplaceOrder) {}
+
     using value_type = std::unique_ptr<LimitOrderBook<PriceKey, LogStream>>;
     std::unordered_map<std::string, value_type> e_;
+    // std::unordered_map<ClientOrderID, >
 };
 } // namespace substrate

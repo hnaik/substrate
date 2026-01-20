@@ -24,6 +24,9 @@
 #include "wrapped_type.h"
 
 #include <cstdint>
+#include <sstream>
+#include <string>
+#include <substrate/sbs_protocol/Side.h>
 
 namespace substrate {
 using ClientOrderID = uint64_t;
@@ -54,4 +57,13 @@ enum class SelfTradePolicy : uint8_t
 using Price = PriceBase<double>;
 using Symbol = WrappedString<sbs_protocol::Symbol>;
 using Account = WrappedString<sbs_protocol::Account>;
+
+namespace side {
+inline std::string to_string(Side side)
+{
+    std::ostringstream oss;
+    oss << static_cast<sbs_protocol::Side::Value>(side);
+    return oss.str();
+}
+} // namespace side
 } // namespace substrate

@@ -25,18 +25,20 @@ https://onepagecode.substack.com/p/electronic-market-structure-and-trading
 #pragma once
 
 #include "common_types.h"
+#include "logging.h"
 #include "order.h"
 #include "order_queue.h"
+#include "responses/execution.h"
 
 #include <cstddef>
 #include <functional>
 #include <string>
 
 namespace substrate {
-template <typename PriceKey, typename LogStream>
+template <typename PriceKey, typename ExecutionQueue>
 class LimitOrderBook {
 public:
-    LimitOrderBook(LogStream& logger) : logger_{logger} {}
+    LimitOrderBook(ExecutionQueue& eq) : eq_{eq} {}
 
     void handle_add(const Order& order)
     {
@@ -48,15 +50,14 @@ public:
         resolve();
     }
 
-    void handle_cancel(const auto& req)
+    void handle_cancel(ClientOrderID clordid)
     {
-        if(bids_.has_order(req.orderid)) {
-            bids_.remove_order(req.orderid);
-        } else if(offers_.has_order(req.orderid)) {
-            offers_.remove_order(req.orderid);
+        if(bids_.has_order(clordid)) {
+            bids_.remove_order(clordid);
+        } else if(offers_.has_order(clordid)) {
+            offers_.remove_order(clordid);
         } else {
-            logger_.err() << "CANCEL_REJECT: " << to_string(req.orderid)
-                          << ", no such order to cancel" << std::endl;
+            ERROR("CANCEL_REJECT: {}, no such order to cancel", clordid);
         }
     }
 
@@ -66,7 +67,7 @@ public:
     size_t num_sell_levels() const { return offers_.num_levels(); }
     size_t num_price_levels() const
     {
-        return bids_.num_levels() + offers_.num_levels();
+        return num_buy_levels() + num_sell_levels();
     }
 
 private:
@@ -93,16 +94,27 @@ private:
         }
     }
 
-    void publish_trade(Order*, Order*, const Price&)
+    void publish_trade(Order* o1, Order* o2, const Price& price)
     {
+        // eq_.push_back(responses::Execution{});
         // logger_.info() << make_trade_event(o1->qty, price) << std::endl;
-        // if(o1->orderid < o2->orderid) {
-        //     publish_fill(o2, o1->qty);
-        //     logger_.info() << make_fill(o1->orderid) << std::endl;
-        // } else {
-        //     logger_.info() << make_fill(o1->orderid) << std::endl;
-        //     publish_fill(o2, o1->qty);
-        // }
+
+        if(o1->clordid < o2->clordid) {
+            INFO("TRADE {} x {} FillPrice:{}",
+                 o2->to_string(),
+                 o1->to_string(),
+                 price.display_value());
+            // publish_fill(o2, o1->qty);
+            // logger_.info() << make_fill(o1->orderid) << std::endl;
+        } else {
+            INFO("TRADE {} x {} FillPrice:{}",
+                 o1->to_string(),
+                 o2->to_string(),
+                 price.display_value());
+
+            // logger_.info() << make_fill(o1->orderid) << std::endl;
+            // publish_fill(o2, o1->qty);
+        }
     }
 
     void publish_fill(Order*, Quantity)
@@ -115,7 +127,7 @@ private:
         // }
     }
 
-    LogStream& logger_;
+    ExecutionQueue& eq_;
     OrderQueue<Price, std::greater<Price>> bids_{"bids"};
     OrderQueue<Price, std::less<Price>> offers_{"offers"};
 };

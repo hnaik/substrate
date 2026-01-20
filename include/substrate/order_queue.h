@@ -94,7 +94,7 @@ public:
             q_.emplace(price, TimePriorityQueue());
         }
 
-        INFO("Adding ClOrdID {}", clordid);
+        DEBUG("Adding ClOrdID {}", clordid);
         auto itr = q_.find(price);
         registry_[clordid] = itr->second.emplace(
             end(itr->second), new Order{clordid, side, qty, price});

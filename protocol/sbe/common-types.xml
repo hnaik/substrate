@@ -36,4 +36,7 @@
     <composite name="Account">
         <type name="data" primitiveType="char" length="16" semanticType="Account" />
     </composite>
+    <composite name="TradeID">
+        <type name="value" primitiveType="uint64" semanticType="TradeID" />
+    </composite>
 </types>

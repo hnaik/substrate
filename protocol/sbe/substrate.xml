@@ -63,5 +63,10 @@
     </sbe:message>
     <sbe:message name="Execution" id="8">
         <field name="clordid" id="1" type="ClientOrderID" description="Client Order ID" />
+        <field name="tradeid" id="2" type="TradeID" description="Trade ID" />
+        <field name="symbol" id="3" type="Symbol" description="Trading Symbol" />
+        <field name="price" id="4" type="Price" description="Order Price" />
+        <field name="qty" id="5" type="Quantity" description="Order Quantity" />
+        <field name="leaves_qty" id="6" type="Quantity" description="Leaves Quantity" />
     </sbe:message>
 </sbe:messageSchema>

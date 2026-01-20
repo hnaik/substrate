@@ -93,7 +93,7 @@ public:
 };
 
 template <typename W, ssize_t N>
-std::ostream& operator<<(std::ostream& os, const PriceBase<W, N>& p)
+inline std::ostream& operator<<(std::ostream& os, const PriceBase<W, N>& p)
 {
     os << p.display_value();
     return os;

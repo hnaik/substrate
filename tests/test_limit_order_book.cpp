@@ -46,7 +46,7 @@ TEST_CASE("MatchingEngine", "[basic]")
         const auto& info_msgs = logger.info_logs();
         lob.handle_add(Order::from_csv("1000008,B,3,1050"));
         REQUIRE(info_msgs.empty());
-        lob.handle_add(Order::from_csv("1000007,B,5,1025"));
+        lob.handle_add(Order::from_csv("1000007,S,5,1025"));
     }
 
     SECTION("cancels") {}

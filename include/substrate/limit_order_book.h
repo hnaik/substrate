@@ -113,15 +113,13 @@ private:
         // TradeID tid{now_ns()};
 
         if(o1->clordid < o2->clordid) {
-            INFO("TRADE {} x {} FillPrice:{:.2f}",
+            INFO("TRD {} x {} FillPrice:{:.2f}",
                  o2->to_string(),
                  o1->to_string(),
                  price.display_value());
-            // pub_trade(o2, o1, price, qty, leaves);
-            // eq_.emplace_back(o2->clordid, tid, symbol_, price, qty, )
             pub_trade(o2, o1, price);
         } else {
-            INFO("TRADE {} x {} FillPrice:{:.2f}",
+            INFO("TRD {} x {} FillPrice:{:.2f}",
                  o1->to_string(),
                  o2->to_string(),
                  price.display_value());
@@ -145,16 +143,6 @@ private:
                          price,
                          qty,
                          std::max(0, o2->qty - o2->qty));
-    }
-
-    void publish_fill(Order*, Quantity)
-    {
-        // if(qty == order->qty) {
-        //     logger_.info() << make_fill(order->clordid) << std::endl;
-        // } else {
-        //     logger_.info() << make_partial(order->clordid, order->qty - qty)
-        //                    << std::endl;
-        // }
     }
 
     Symbol symbol_;

@@ -1,5 +1,6 @@
 #include <substrate/limit_order_book.h>
 
+#include "spdlog/spdlog.h"
 #include "substrate/logging.h"
 #include "substrate/responses/execution.h"
 #include <substrate/application.h>
@@ -11,6 +12,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include <deque>
+#include <vector>
 
 TEST_CASE("MatchingEngine", "[basic]")
 {
@@ -19,7 +21,7 @@ TEST_CASE("MatchingEngine", "[basic]")
     using namespace substrate;
     // MockLogStream logger;
     // LimitOrderBook<Price, MockLogStream> lob{logger};
-    using ExecutionQueue = std::deque<responses::Execution>;
+    using ExecutionQueue = std::vector<responses::Execution>;
     ExecutionQueue eq;
     LimitOrderBook<Price, ExecutionQueue> lob{Symbol{"AAPL"}, eq};
 
@@ -48,18 +50,28 @@ TEST_CASE("MatchingEngine", "[basic]")
 
     SECTION("matches")
     {
-        // const auto& info_msgs = logger.info_logs();
         lob.handle_add(Order::from_csv("1000001,B,3,1050"));
         lob.handle_add(Order::from_csv("1000002,B,3,1055"));
         lob.handle_add(Order::from_csv("1000003,B,3,1045"));
-        // REQUIRE(info_msgs.empty());
         lob.handle_add(Order::from_csv("1000004,S,10,1025"));
-
-        while(!eq.empty()) {
-            SPDLOG_INFO("{}", eq.front().to_string());
-            eq.pop_front();
-        }
     }
 
-    SECTION("cancels") {}
+    SECTION("cancels")
+    {
+
+        lob.handle_add(Order::from_csv("1000000,S,1,1075"));
+        lob.handle_add(Order::from_csv("1000001,B,9,1000"));
+        lob.handle_add(Order::from_csv("1000002,B,30,975"));
+        lob.handle_add(Order::from_csv("1000003,S,10,1050"));
+        lob.handle_add(Order::from_csv("1000004,B,10,950"));
+        lob.handle_add(Order::from_csv("1000005,S,2,1025"));
+        lob.handle_add(Order::from_csv("1000006,B,1,1000"));
+        lob.handle_cancel(ClOrdID{1000004});
+        lob.handle_add(Order::from_csv("1000007,S,5,1025"));
+        lob.handle_add(Order::from_csv("1000008,B,3,1050"));
+
+        for(const auto& e : eq) {
+            SPDLOG_INFO("{}", e.to_string());
+        }
+    }
 }

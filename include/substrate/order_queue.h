@@ -93,10 +93,10 @@ public:
             q_.emplace(price, TimePriorityQueue());
         }
 
-        DEBUG("Adding ClOrdID {}", clordid);
         auto itr = q_.find(price);
         registry_[clordid] = itr->second.emplace(
             end(itr->second), new Order{clordid, side, qty, price});
+        DEBUG("ADD {}", registry_[clordid].back()->to_string());
     }
 
     void add(const Order& order)
@@ -134,6 +134,7 @@ public:
             // found in one lookup and not the other
             return;
         }
+        INFO("CXL {}", (*itr->second)->to_string());
         p_itr->second.erase(itr->second);
         registry_.erase(clordid);
         if(p_itr->second.empty()) {

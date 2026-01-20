@@ -35,7 +35,8 @@ using Quantity = int32_t;
 enum class Side : uint8_t
 {
     buy = sbs_protocol::Side::Buy,
-    sell = sbs_protocol::Side::Sell
+    sell = sbs_protocol::Side::Sell,
+    short_sell = sbs_protocol::Side::ShortSell
 };
 
 enum class TIF : uint8_t

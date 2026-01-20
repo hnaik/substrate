@@ -50,7 +50,7 @@ struct Order {
 
     std::string to_string() const
     {
-        return std::format("Order({}|{:4s}|Qty:{:5d}|${:6.2f})",
+        return std::format("Order(ClOrdID={}|Side={}|Qty={}|Px={})",
                            clordid,
                            side::to_string(this->side),
                            qty,

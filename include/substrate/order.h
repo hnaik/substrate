@@ -42,12 +42,11 @@ inline bool operator==(const Order& o1, const Order& o2)
 
 inline bool operator!=(const Order& o1, const Order& o2) { return !(o1 == o2); }
 
-inline std::ostream& operator<<(std::ostream& os, const Order&)
+inline std::ostream& operator<<(std::ostream& os, const Order& order)
 {
-    // os << "Order(" << order.clordid << ";"
-    //    << static_cast<sbs_protocol::Side::Value>(order.side) << ";" <<
-    //    order.qty
-    //    << ";" << order.price.display_value() << ")";
+    os << "Order(" << order.clordid << ";"
+       << static_cast<sbs_protocol::Side::Value>(order.side) << ";" << order.qty
+       << ";" << order.price.display_value() << ")";
     return os;
 }
 } // namespace substrate

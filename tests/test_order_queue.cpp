@@ -1,10 +1,10 @@
+#include <substrate/order_queue.h>
 
 #include <string_helpers.h>
 #include <substrate/application.h>
 #include <substrate/common_types.h>
 #include <substrate/messages.h>
 #include <substrate/order.h>
-#include <substrate/order_queue.h>
 #include <substrate/price.h>
 
 #include <catch2/catch_test_macros.hpp>
@@ -27,7 +27,6 @@ substrate::Order make_order(const std::string& s)
 TEST_CASE("OrderBook")
 {
     using namespace substrate;
-    Application<int> app{""};
 
     using MaxPriorityQueue = OrderQueue<substrate::Price, std::greater<Price>>;
 
@@ -174,49 +173,45 @@ TEST_CASE("OrderBook")
             REQUIRE(sells.top()->qty == Quantity{1500});
         }
 
-        //     SECTION("pop")
-        //     {
-        //         REQUIRE(sells.empty());
+        SECTION("pop")
+        {
+            REQUIRE(sells.empty());
 
-        //         Order null_order{0, Side::sell, 0, Price{"0"}};
+            Order null_order{0, Side::sell, 0, Price{"0"}};
 
-        //         // Initial order
-        //         // sells.add(Price{"12345"}, ClientOrderID{12345},
-        //         Quantity{1000}); sells.add(make_order("12345,S,1000,12345"));
+            // Initial order
+            sells.add(make_order("100001,S,1000,12345"));
 
-        //         auto order_1 = sells.top() ? *sells.top() : null_order;
-        //         REQUIRE(order_1 == Order{ClientOrderID{12345},
-        //                                  Side::sell,
-        //                                  Quantity{1000},
-        //                                  Price{"12345"}});
-        //         sells.pop();
-        //         REQUIRE(sells.empty());
-        //         REQUIRE(sells.top() == nullptr);
+            auto order_1 = sells.top() ? *sells.top() : null_order;
+            REQUIRE(order_1 == Order{ClientOrderID{100001},
+                                     Side::sell,
+                                     Quantity{1000},
+                                     Price{"12345"}});
+            sells.pop();
+            REQUIRE(sells.empty());
+            REQUIRE(sells.top() == nullptr);
 
-        //         // sells.add(Price{"12350"}, ClientOrderID{23456},
-        //         Quantity{1500}); sells.add(make_order("23456,S,1500,12350"));
-        //         // sells.add(Price{"12325"}, ClientOrderID{23456},
-        //         Quantity{1500}); sells.add(make_order("23456,S,1500,12345"));
-        //         // sells.add(Price{"12325"}, ClientOrderID{34567},
-        //         Quantity{2500}); sells.add(make_order("34567,S,2500,12345"));
+            sells.add(make_order("100002,S,1500,12350"));
+            sells.add(make_order("100002,S,3500,12345"));
+            sells.add(make_order("100003,S,2500,12345"));
 
-        //         auto order_2 = sells.top() ? *sells.top() : null_order;
-        //         REQUIRE(order_2 == Order{ClientOrderID{23456},
-        //                                  Side::sell,
-        //                                  Quantity{1500},
-        //                                  Price{"12325"}});
+            auto order_2 = sells.top() ? *sells.top() : null_order;
+            REQUIRE(order_2 == Order{ClientOrderID{100003},
+                                     Side::sell,
+                                     Quantity{2500},
+                                     Price{"12345"}});
 
-        //         sells.pop();
-        //         auto order_3 = sells.top() ? *sells.top() : null_order;
-        //         REQUIRE(order_3 == Order{ClientOrderID{34567},
-        //                                  Side::sell,
-        //                                  Quantity{2500},
-        //                                  Price{"12325"}});
+            sells.pop();
+            auto order_3 = sells.top() ? *sells.top() : null_order;
+            REQUIRE(order_3 == Order{ClientOrderID{100002},
+                                     Side::sell,
+                                     Quantity{1500},
+                                     Price{"12350"}});
 
-        //         sells.pop();
-        //         sells.pop();
+            sells.pop();
+            sells.pop();
 
-        //         REQUIRE(sells.empty());
-        //     }
+            REQUIRE(sells.empty());
+        }
     }
 }

@@ -6,7 +6,8 @@ target_link_libraries(all_tests PRIVATE
     substrate
     substrate_sbe
     Catch2::Catch2WithMain
-    fmt::fmt)
+    fmt::fmt
+)
 copy_program(all_tests)
 
 include(CTest)

@@ -21,12 +21,10 @@
 
 #include "common_types.h"
 #include "order.h"
-#include "spdlog/spdlog-inl.h"
 #include "substrate/application.h"
 #include "substrate/logging.h"
 
 #include <cstddef>
-#include <iostream>
 #include <list>
 #include <map>
 #include <memory>

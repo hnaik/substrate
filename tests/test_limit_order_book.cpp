@@ -44,9 +44,11 @@ TEST_CASE("MatchingEngine", "[basic]")
     SECTION("matches")
     {
         const auto& info_msgs = logger.info_logs();
-        lob.handle_add(Order::from_csv("1000008,B,3,1050"));
+        lob.handle_add(Order::from_csv("1000001,B,3,1050"));
+        lob.handle_add(Order::from_csv("1000002,B,3,1055"));
+        lob.handle_add(Order::from_csv("1000003,B,3,1045"));
         REQUIRE(info_msgs.empty());
-        lob.handle_add(Order::from_csv("1000007,S,5,1025"));
+        lob.handle_add(Order::from_csv("1000004,S,10,1025"));
     }
 
     SECTION("cancels") {}

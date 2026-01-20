@@ -100,14 +100,14 @@ private:
         // logger_.info() << make_trade_event(o1->qty, price) << std::endl;
 
         if(o1->clordid < o2->clordid) {
-            INFO("TRADE {} x {} FillPrice:{}",
+            INFO("TRADE {} x {} FillPrice:{:.2f}",
                  o2->to_string(),
                  o1->to_string(),
                  price.display_value());
             // publish_fill(o2, o1->qty);
             // logger_.info() << make_fill(o1->orderid) << std::endl;
         } else {
-            INFO("TRADE {} x {} FillPrice:{}",
+            INFO("TRADE {} x {} FillPrice:{:.2f}",
                  o1->to_string(),
                  o2->to_string(),
                  price.display_value());

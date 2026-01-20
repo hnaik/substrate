@@ -18,7 +18,69 @@
 # ============================================================================*/
 
 #pragma once
+#include "common_types.h"
+#include "messages.h"
+#include "string_helpers.h"
+#include "substrate/new_order.h"
+#include "substrate/timestamp.h"
+
+#include <string>
+#include <string_view>
 
 namespace substrate {
+
+// std::string_view to_string(Side);
+// std::string_view to_string(MsgType);
+// std::string to_string(OrderID);
+// std::string to_string(const AddOrderRequest&);
+// std::string to_string(const CancelOrderRequest&);
+// std::string to_string(const TradeEvent&);
+// std::string to_string(const OrderFullyFilled&);
+// std::string to_string(const OrderPartiallyFilled&);
+
+Side parse_side(const std::string&);
+inline Requests parse_request_csv(const std::string& csv)
+{
+    auto tokens = split(csv);
+    if(tokens[0] == "ADD") {
+        ClientOrderID clordid{std::stoul(tokens[1].c_str())};
+        Side side = tokens[2] == "0" ? Side::buy : Side::sell;
+        Quantity qty{std::stoi(tokens[3].c_str())};
+        return NewOrder{clordid,
+                        Symbol::from_sv("AAPL"),
+                        side,
+                        qty,
+                        qty,
+                        qty,
+                        Price::from_string(tokens[4]),
+                        TIF::day,
+                        Account::from_sv("0000000"),
+                        Timestamp{123456},
+                        SelfTradePolicy::cancel_new};
+    }
+
+    return NewOrder();
+}
+
+// AddOrderRequest parse_add_order_request(const std::string&);
+// CancelOrderRequest parse_cancel_order_request(const std::string&);
+
+// Requests parse_input(const std::string&);
+
+// TradeEvent make_trade_event(Quantity, const Price&);
+// OrderPartiallyFilled make_partial(OrderID, Quantity);
+// OrderFullyFilled make_fill(OrderID);
+
+// template <typename T>
+// concept OutputMessage = std::same_as<T, TradeEvent> ||           //
+//                         std::same_as<T, OrderPartiallyFilled> || //
+//                         std::same_as<T, OrderFullyFilled>;
+// template <typename T>
+//     requires OutputMessage<T>
+// std::ostream& operator<<(std::ostream& os, const T& value)
+// {
+//     os << to_string(value);
+//     return os;
+// }
 
 } // namespace substrate

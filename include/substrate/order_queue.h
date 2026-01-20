@@ -21,11 +21,16 @@
 
 #include "common_types.h"
 #include "order.h"
+#include "spdlog/spdlog-inl.h"
+#include "substrate/application.h"
+#include "substrate/logging.h"
 
 #include <cstddef>
+#include <iostream>
 #include <list>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -79,16 +84,38 @@ public:
         }
     }
 
-    void add(const key_type& price, ClientOrderID clordid, Quantity quantity)
+    void
+    add(ClientOrderID clordid, Side side, Quantity qty, const key_type& price)
     {
+        if(registry_.contains(clordid)) {
+            WARN("ClOrdID {} exists, not adding", clordid);
+            return;
+        }
+
         if(!q_.contains(price)) {
             q_.emplace(price, TimePriorityQueue());
         }
-        registry_[clordid] = q_.at(price).emplace(
-            end(q_.at(price)), new Order{clordid, quantity, price});
+
+        INFO("Adding ClOrdID {}", clordid);
+        auto itr = q_.find(price);
+        registry_[clordid] = itr->second.emplace(
+            end(itr->second), new Order{clordid, side, qty, price});
     }
 
-    size_t size() const { return q_.size(); }
+    void add(const Order& order)
+    {
+        add(order.clordid, order.side, order.qty, order.price);
+    }
+
+    size_t num_levels() const { return q_.size(); }
+    size_t size() const
+    {
+        return std::accumulate(
+            begin(q_),
+            end(q_),
+            static_cast<size_t>(0),
+            [](size_t p, const auto& tq) { return p + tq.second.size(); });
+    }
     bool empty() const { return size() == 0; }
 
     bool has_order(ClientOrderID clordid) const

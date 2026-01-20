@@ -19,35 +19,27 @@
 
 #pragma once
 
-#include "common_types.h"
-
-#include <substrate/sbs_protocol/Side.h>
-
+#include <concepts>
 #include <ostream>
-#include <tuple>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace substrate {
-struct Order {
-    ClientOrderID clordid;
-    Side side;
-    Quantity qty;
-    Price price;
-};
+// template <typename T>
+//     requires(!std::same_as<T, std::string>)
+// std::string to_string(T&& value)
+// {
+//     return std::to_string(std::forward<T>(value));
+// }
 
-inline bool operator==(const Order& o1, const Order& o2)
-{
-    return std::tie(o1.clordid, o1.side, o1.qty, o1.price) ==
-           std::tie(o2.clordid, o2.side, o2.qty, o2.price);
-}
+// template <typename T>
+//     requires(!std::same_as<T, std::string>)
+// std::ostream& operator<<(std::ostream& os, const T& value)
+// {
+//     os << value.to_string();
+//     return os;
+// }
 
-inline bool operator!=(const Order& o1, const Order& o2) { return !(o1 == o2); }
-
-inline std::ostream& operator<<(std::ostream& os, const Order&)
-{
-    // os << "Order(" << order.clordid << ";"
-    //    << static_cast<sbs_protocol::Side::Value>(order.side) << ";" <<
-    //    order.qty
-    //    << ";" << order.price.display_value() << ")";
-    return os;
-}
+std::vector<std::string> split(const std::string& s, char delim = ',');
 } // namespace substrate

@@ -19,35 +19,13 @@
 
 #pragma once
 
-#include "common_types.h"
-
-#include <substrate/sbs_protocol/Side.h>
-
-#include <ostream>
-#include <tuple>
-
 namespace substrate {
-struct Order {
-    ClientOrderID clordid;
-    Side side;
-    Quantity qty;
-    Price price;
+// From https://en.cppreference.com/w/cpp/utility/variant/visit2.html
+
+template <typename... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
 };
-
-inline bool operator==(const Order& o1, const Order& o2)
-{
-    return std::tie(o1.clordid, o1.side, o1.qty, o1.price) ==
-           std::tie(o2.clordid, o2.side, o2.qty, o2.price);
-}
-
-inline bool operator!=(const Order& o1, const Order& o2) { return !(o1 == o2); }
-
-inline std::ostream& operator<<(std::ostream& os, const Order&)
-{
-    // os << "Order(" << order.clordid << ";"
-    //    << static_cast<sbs_protocol::Side::Value>(order.side) << ";" <<
-    //    order.qty
-    //    << ";" << order.price.display_value() << ")";
-    return os;
-}
+template <typename... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
 } // namespace substrate

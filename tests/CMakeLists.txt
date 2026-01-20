@@ -1,9 +1,12 @@
-file(GLOB TEST_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-add_executable(all_tests ${TEST_SRCS})
+file(GLOB TEST_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+add_executable(all_tests ${TEST_SRCS} mocks/mock_logger.cpp)
 target_link_libraries(all_tests PRIVATE 
     substrate
     substrate_sbe
-    Catch2::Catch2WithMain)
+    Catch2::Catch2WithMain
+    fmt::fmt)
 copy_program(all_tests)
 
 include(CTest)

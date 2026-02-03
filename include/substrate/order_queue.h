@@ -1,7 +1,7 @@
 /* ==============================================================================
 # Substrate: Financial Execution Research Platform
 # ==============================================================================
-# Copyright (C) 2026  Harish Naik
+# Copyright (C) 2026  Harish Naik <harishgnaik@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

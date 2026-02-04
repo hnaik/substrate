@@ -58,3 +58,4 @@ tmp/
 *.log
 *.aux
 *.lof
+__marimo__/

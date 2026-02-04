@@ -27,3 +27,7 @@ openjdk = ">=25.0.1,<26"
 catch2 = ">=3.12.0,<4"
 jsoncpp = ">=1.9.6,<2"
 boost = ">=1.85.0,<2"
+marimo = ">=0.19.7,<0.20"
+
+[pypi-dependencies]
+databento = ">=0.70.0, <0.71"

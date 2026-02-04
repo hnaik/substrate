@@ -48,3 +48,13 @@
 .vscode
 build
 compile_commands.json
+extdata/
+*~
+*.pyc
+__pycache__/
+.ipynb_checkpoints
+logs/
+tmp/
+*.log
+*.aux
+*.lof

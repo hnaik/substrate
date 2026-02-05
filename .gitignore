@@ -59,3 +59,4 @@ tmp/
 *.aux
 *.lof
 __marimo__/
+.env

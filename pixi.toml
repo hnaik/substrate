@@ -6,14 +6,48 @@ platforms = ["linux-64", "osx-arm64"]
 version = "0.1.0"
 
 [tasks]
+fmt = "ruff"
+
+[tasks.py]
+env = { PYTHONPATH = "./python" }
+cmd = ["python"]
+
+[tasks.jupyter]
+cmd = [
+    "python",
+    "-m",
+    "jupyter",
+    "lab",
+    "--no-browser",
+    "--ip=0.0.0.0",
+    "--autoreload",
+    "--NotebookApp.token=''",
+    "--NotebookApp.password=''",
+    "--NotebookApp.allow_origin='*'",
+    "--NotebookApp.disable_check_xsrf=True",
+    "--NotebookApp.allow_origin='*'",
+]
+
+env = { PYTHONPATH = "./python" }
+
+[tasks.marimo]
+cmd = ["python", "-m", "marimo", "edit", "--headless"]
+env = { PYTHONPATH = "./python" }
 
 [tasks.build]
 cmd = ["cmake"]
 
 [tasks.config]
 cmd = [
-    "cmake", "-G", "Ninja", "-S", ".", "-B", "build/debug",
-    "-DCMAKE_BUILD_TYPE=Debug"]
+    "cmake",
+    "-G",
+    "Ninja",
+    "-S",
+    ".",
+    "-B",
+    "build/debug",
+    "-DCMAKE_BUILD_TYPE=Debug",
+]
 
 [dependencies]
 gcc = ">=15.2.0,<15.3"
@@ -30,17 +64,17 @@ marimo = ">=0.19.7,<0.20"
 polars = ">=1.37.1,<2"
 loguru = ">=0.7.3,<0.8"
 ruff = ">=0.15.0,<0.16"
+jupyter = ">=1.1.1,<2"
+pytest = ">=9.0.2,<10"
+python-lsp-server = ">=1.14.0,<2"
+websockets = ">=16.0,<17"
+python-lsp-ruff = ">=2.3.0,<3"
+mcp = ">=1"
+pydantic = ">=2"
 
 [pypi-dependencies]
 databento = ">=0.70.0, <0.71"
+pylint-pytest = ">=1.1.7, <2"
 
 [target.linux-64.dependencies]
 sbe-cxx = ">=1.37.1,<2"
-
-[tool.ruff]
-# Set the maximum line length to 79.
-line-length = 79
-indent-width = 4
-
-[tool.ruff.format]
-quote-style = "single"

@@ -21,11 +21,13 @@ import databento as db
 
 # print(db.list_datasets())
 
+
 def make_historical_client():
     api_key = os.getenv("DATABENTO_API_KEY")
     if not api_key:
         raise ValueError("DATABENTO_API_KEY is not set")
     return db.Historical(api_key)
+
 
 client = make_historical_client()
 data = client.timeseries.get_range(
@@ -35,4 +37,4 @@ data = client.timeseries.get_range(
     end="2022-06-02T14:30:00",
 )
 
-data.replay(print)
+# data.replay(print)

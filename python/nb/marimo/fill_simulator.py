@@ -23,7 +23,8 @@ def _():
     import databento as db
     import polars as pl
 
-    return Path, db, json, pl
+    import substrate.data_utils as sdu
+    return Path, db, json, pl, sdu
 
 
 @app.cell
@@ -37,7 +38,6 @@ def _(Path, json):
     def print_dict(data: dict):
         for k, v in data.items():
             print(k, v)
-
     return (data_dir,)
 
 
@@ -46,32 +46,56 @@ def _(Path, db, pl):
     def make_dataframe(path: Path) -> pl.DataFrame:
         data = db.read_dbn(path)
         return pl.from_pandas(data.to_df())
-
-    return (make_dataframe,)
-
-
-@app.cell
-def _(data_dir, make_dataframe, pl):
-    def basic_explore(df_orig: pl.DataFrame, symbol: str):
-        df = df_orig.filter(pl.col("symbol") == symbol.upper())
-        print(df.head())
-
-    for file_path in sorted(data_dir.glob("*.zst")):
-        pq_out_path = file_path.parent / f"{file_path.stem}.parquet"
-        if pq_out_path.exists():
-            continue
-        df = make_dataframe(file_path)
-        print(f"loaded dataframe from {file_path} of dim:{df.shape}")
-        df.write_parquet(pq_out_path)
     return
 
 
 @app.cell
-def _():
-    # start = time.time()
-    # test_df = pl.read_parquet('/home/hnaik/ws/rootmethod/substrate/extdata/xnas-itch-20260126.mbp-10.dbn.parquet')
-    # stop = time.time()
-    # print(f'loaded df. time={stop - start}')
+def _(data_dir, sdu):
+    refdata = sdu.RefDataWrapper(data_dir / 'symbology.json')
+    # md = sdu.load_market_data(data_dir / '')
+
+
+    def get_book_snapshot(symbol: str, timestamp: str): ...
+    return (refdata,)
+
+
+@app.cell
+def _(Path, data_dir, pl, refdata, sdu):
+    def load_all(dir_path: Path) -> pl.DataFrame:
+        files = [p for p in sorted(data_dir.glob('*.parquet'))]
+        return pl.concat([sdu.load_market_data(p) for p in files])
+
+
+    class MarketData:
+        def __init__(self, path: Path, refdata: sdu.RefDataWrapper):
+            self._df = load_all(path)
+            self._ref_data = refdata
+
+        def get_book_snapshot(
+            self, symbol: str | int, timestamp: str
+        ) -> pl.DataFrame:
+            instrument_id = (
+                self._ref_data.get_id(symbol)
+                if isinstance(symbol, str)
+                else symbol
+            )
+            ts_event = pl.lit(timestamp).str.to_datetime(
+                time_zone='UTC', time_unit='ns'
+            )
+
+            return (
+                self._df.filter((pl.col('instrument_id') == instrument_id))
+                .sort((pl.col('ts_event') - ts_event).abs())
+                .head(1)
+            )
+
+
+    md = MarketData(path=data_dir, refdata=refdata)
+    book_state = md.get_book_snapshot(
+        symbol='SPY', timestamp='2026-01-26T10:30:00'
+    )
+
+    print(book_state.head())
     return
 
 

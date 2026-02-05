@@ -24,7 +24,8 @@ def _():
     import polars as pl
 
     import substrate.data_utils as sdu
-    return Path, db, json, pl, sdu
+    import substrate.types as st
+    return Path, db, json, pl, sdu, st
 
 
 @app.cell
@@ -96,6 +97,17 @@ def _(Path, data_dir, pl, refdata, sdu):
     )
 
     print(book_state.head())
+    return
+
+
+@app.cell
+def _(pl, st):
+    class FillSimulator:
+        def __init__(self): ...
+
+        def execute_market_order(
+            self, side: st.OrderSide, size: int, book_state: pl.DataFrame
+        ): ...
     return
 
 

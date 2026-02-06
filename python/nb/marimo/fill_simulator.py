@@ -102,18 +102,24 @@ def _(book_state, pl, st):
 
 
     class OrderStatus(Enum):
-        NewOrder = 1
-        OrderAcked = 2
-        Canceled = 3
-        Partial = 4
-        Filled = 5
+        NEW_ORDER = 1
+        ORDER_ACK = 2
+        CANCELED = 3
+        PARTIAL = 4
+        FILLED = 5
+
+        def __repr__(self) -> str:
+            return self.name
 
 
     @dataclass
     class ExecutionResponse:
         price: float
         size: int
-        status: OrderStatus.Filled
+        status: OrderStatus
+
+        def __repr__(self) -> str:
+            return f'ExecResp({self.status}: {self.size:5d}@{self.price:-6.2f})'
 
 
     class FillSimulator:
@@ -122,19 +128,17 @@ def _(book_state, pl, st):
         def execute_market_order(
             self, side: st.OrderSide, size: int, book_state: pl.DataFrame
         ):
-            response = ExecutionResponse(0, size=size, status=OrderStatus.Filled)
+            response = ExecutionResponse(0, size=size, status=OrderStatus.FILLED)
             if side == st.OrderSide.BUY:
                 row = book_state.select(pl.col('ask_sz_00', 'ask_px_00')).collect()
-                response.price = row['ask_px_00']
-                response.size = (
-                    size if size <= row['ask_sz_00'] else row['ask_sz_00']
-                )
+                response.price = row['ask_px_00'].item()
+                response.size = min(size, row['ask_sz_00'].item())
             else:
                 row = book_state.select(pl.col('bid_sz_00', 'bid_px_00')).collect()
-                response.price = row['bid_px_00']
-                response.size = (
-                    size if size <= row['bid_sz_00'] else row['bid_sz_00']
-                )
+                response.price = row['bid_px_00'].item()
+                response.size = min(size, row['bid_px_00'].item())
+            if response.size < size:
+                response.status = OrderStatus.PARTIAL
             return response
 
 
@@ -142,7 +146,6 @@ def _(book_state, pl, st):
     response = fill_sim.execute_market_order(
         st.OrderSide.BUY, size=100, book_state=book_state
     )
-    print(response)
     return
 
 

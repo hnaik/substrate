@@ -1,14 +1,10 @@
 # /// script
 # requires-python = ">=3.13"
-# dependencies = [
-#     "marimo>=0.19.0",
-#     "pyzmq>=27.1.0",
-# ]
 # ///
 
 import marimo
 
-__generated_with = "0.19.7"
+__generated_with = "0.19.8"
 app = marimo.App(app_title="Fill Simulator Exploration")
 
 
@@ -25,20 +21,22 @@ def _():
 
     import substrate.data_utils as sdu
     import substrate.types as st
+
     return Path, db, json, pl, sdu, st
 
 
 @app.cell
 def _(Path, json):
-    data_dir = Path().absolute() / "extdata"
+    data_dir = Path().absolute() / 'extdata'
 
     def load_json(name: str) -> dict:
-        path = data_dir / f"{name}.json"
+        path = data_dir / f'{name}.json'
         return json.load(path.open())
 
     def print_dict(data: dict):
         for k, v in data.items():
             print(k, v)
+
     return (data_dir,)
 
 
@@ -47,16 +45,16 @@ def _(Path, db, pl):
     def make_dataframe(path: Path) -> pl.DataFrame:
         data = db.read_dbn(path)
         return pl.from_pandas(data.to_df())
+
     return
 
 
 @app.cell
 def _(data_dir, sdu):
     refdata = sdu.RefDataWrapper(data_dir / 'symbology.json')
-    # md = sdu.load_market_data(data_dir / '')
-
 
     def get_book_snapshot(symbol: str, timestamp: str): ...
+
     return (refdata,)
 
 
@@ -66,10 +64,10 @@ def _(Path, data_dir, pl, refdata, sdu):
         files = [p for p in sorted(data_dir.glob('*.parquet'))]
         return pl.concat([sdu.load_market_data(p) for p in files])
 
-
     class MarketData:
         def __init__(self, path: Path, refdata: sdu.RefDataWrapper):
-            self._df = load_all(path)
+            # self._df = load_all(path)
+            self._df = pl.scan_parquet(data_dir / '*.parquet')
             self._ref_data = refdata
 
         def get_book_snapshot(
@@ -90,24 +88,61 @@ def _(Path, data_dir, pl, refdata, sdu):
                 .head(1)
             )
 
-
     md = MarketData(path=data_dir, refdata=refdata)
     book_state = md.get_book_snapshot(
         symbol='SPY', timestamp='2026-01-26T10:30:00'
     )
-
-    print(book_state.head())
-    return
+    return (book_state,)
 
 
 @app.cell
-def _(pl, st):
+def _(book_state, pl, st):
+    from dataclasses import dataclass
+    from enum import Enum
+
+
+    class OrderStatus(Enum):
+        NewOrder = 1
+        OrderAcked = 2
+        Canceled = 3
+        Partial = 4
+        Filled = 5
+
+
+    @dataclass
+    class ExecutionResponse:
+        price: float
+        size: int
+        status: OrderStatus.Filled
+
+
     class FillSimulator:
         def __init__(self): ...
 
         def execute_market_order(
             self, side: st.OrderSide, size: int, book_state: pl.DataFrame
-        ): ...
+        ):
+            response = ExecutionResponse(0, size=size, status=OrderStatus.Filled)
+            if side == st.OrderSide.BUY:
+                row = book_state.select(pl.col('ask_sz_00', 'ask_px_00')).collect()
+                response.price = row['ask_px_00']
+                response.size = (
+                    size if size <= row['ask_sz_00'] else row['ask_sz_00']
+                )
+            else:
+                row = book_state.select(pl.col('bid_sz_00', 'bid_px_00')).collect()
+                response.price = row['bid_px_00']
+                response.size = (
+                    size if size <= row['bid_sz_00'] else row['bid_sz_00']
+                )
+            return response
+
+
+    fill_sim = FillSimulator()
+    response = fill_sim.execute_market_order(
+        st.OrderSide.BUY, size=100, book_state=book_state
+    )
+    print(response)
     return
 
 

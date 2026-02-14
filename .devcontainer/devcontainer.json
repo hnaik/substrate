@@ -1,9 +1,7 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/python:3.14",
-    "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {
-            "version": "20.10.16"
-        }
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
     },
     "remoteUser": "sbsdev",
     "containerUser": "sbsdev",

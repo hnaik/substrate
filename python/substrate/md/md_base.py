@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from substrate.md import BookSnapshot
+from substrate.md.snapshot import BookSnapshot
 
 
 class MDBase(ABC):

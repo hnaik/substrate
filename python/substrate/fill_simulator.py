@@ -1,61 +1,31 @@
 import polars as pl
 
 from substrate.types import OrderSide
+from substrate.messages import ExecutionResponse, Fill
+from substrate.types import OrderStatus, OrderSide
+from substrate.md.snapshot import QuoteSnapshot
 
 
 def simulate_fill(
-    order_side: OrderSide,
-    order_size: int,
-    bid_px: float,
-    ask_px: float,
-    bid_sz: int,
-    ask_sz: int,
+    side: OrderSide, qty: int, quote: QuoteSnapshot
 ) -> tuple[float, int]:
-    if order_side == OrderSide.BUY:
-        if order_size <= ask_sz:
-            return ask_px, order_size
+    if side == OrderSide.BUY:
+        if qty <= quote.ask.qty:
+            return Fill(price=quote.ask.price, qty=qty)
         else:
-            return ask_px, ask_sz
-    elif order_side == OrderSide.SELL:
-        if order_size <= bid_sz:
-            return bid_px, order_size
-        else:
-            return bid_px, bid_sz
+            return Fill(price=quote.ask.price, qty=quote.ask.qty)
+    if qty <= quote.bid.qty:
+        return Fill(price=quote.bid.price, qty=qty)
+    return Fill(price=quote.bid.price, qty=quote.bid.qty)
 
 
 class FillSimulator:
-    def __init__(self, market_data: pl.DataFrame):
-        self.market_data = market_data
+    def __init__(self): ...
 
     def execute_market_order(
-        self, ts: int, symbol: str, side: OrderSide, size: int
-    ) -> tuple[float, int]:
-        row = (
-            self.market_data.filter(
-                (pl.col('timestamp') == ts) & (pl.col('symbol') == symbol)
-            )
-            .select(
-                [
-                    pl.col('bid_price').first(),
-                    pl.col('ask_price').first(),
-                    pl.col('bid_size').first(),
-                    pl.col('ask_size').first(),
-                ]
-            )
-            .to_dicts()[0]
+        self, side: OrderSide, qty: int, quote: QuoteSnapshot
+    ):
+        fill = simulate_fill(side, qty, quote)
+        return ExecutionResponse(
+            price=fill.price, qty=fill.qty, status=OrderStatus.FILLED
         )
-
-        fill_price, fill_size = simulate_fill(
-            order_side=side,
-            order_size=size,
-            bid_px=row['bid_price'],
-            ask_px=row['ask_price'],
-            bid_sz=row['bid_size'],
-            ask_sz=row['ask_size'],
-        )
-
-        return fill_price, fill_size
-
-    def simulate_order(
-        self, ts: int, symbol: str, side, size: int, order_type: str
-    ): ...

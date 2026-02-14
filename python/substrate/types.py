@@ -13,3 +13,6 @@ class OrderStatus(Enum):
     PARTIALLY_FILLED = 'PARTIALLY_FILLED'
     CANCELED = 'CANCELED'
     REJECTED = 'REJECTED'
+
+    def __repr__(self):
+        return self.value

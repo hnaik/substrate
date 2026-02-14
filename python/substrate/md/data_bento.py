@@ -22,8 +22,9 @@ class DataBento(MDBase):
             time_zone='UTC', time_unit='ns'
         )
 
-        return (
+        row = (
             self._df.filter((pl.col('instrument_id') == instrument_id))
             .sort((pl.col('ts_event') - ts_event).abs())
             .head(1)
         )
+        return BookSnapshot.from_dbn(row)

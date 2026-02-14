@@ -46,6 +46,10 @@ build-docker:
 run-docker:
 	$(PROJECT_ROOT)/cr/start.sh run
 
+.PHONY: run-jupyter
+run-jupyter:
+	pixi run jupyter
+
 .PHONY: clean
 clean:
 	find scripts -type d -name "__pycache__"

@@ -2,6 +2,10 @@ CompileFlags:
     CompilationDatabase: build/gcc-debug
     Add:
         - "-I/home/hnaik/ws/rootmethod/substrate/.pixi/envs/default/include"
+    Remove:
+        - -fdeps-format=*
+        - -fmodules-ts
+        - -fmodule-mapper=*
 
 Index:
     Background: Build

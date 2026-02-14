@@ -146,6 +146,7 @@ def _(book_state, pl, st):
     response = fill_sim.execute_market_order(
         st.OrderSide.BUY, size=100, book_state=book_state
     )
+    print(response)
     return
 
 

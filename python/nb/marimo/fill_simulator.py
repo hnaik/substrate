@@ -10,10 +10,6 @@ app = marimo.App(app_title="Fill Simulator Exploration")
 
 @app.cell
 def _():
-    import json
-    import os
-    import time
-    from datetime import date, datetime
     from pathlib import Path
 
     import databento as db
@@ -22,8 +18,9 @@ def _():
     import substrate.data_utils as sdu
     import substrate.types as st
     from substrate.md.data_bento import DataBento
+    from substrate.fill_simulator import FillSimulator
 
-    return DataBento, Path, pl, sdu, st
+    return DataBento, FillSimulator, Path, pl, sdu, st
 
 
 @app.cell
@@ -49,9 +46,7 @@ def _(DataBento, data_dir, pl, refdata):
 
 
 @app.cell
-def _(book_state, st):
-    from substrate.fill_simulator import FillSimulator
-
+def _(FillSimulator, book_state, st):
     fill_sim = FillSimulator()
     response = fill_sim.execute_market_order(
         st.OrderSide.BUY, qty=100, quote=book_state

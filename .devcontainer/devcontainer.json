@@ -1,0 +1,9 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "remoteUser": "sbsdev",
+    "containerUser": "sbsdev",
+    "postCreateCommand": "pixi install"
+}

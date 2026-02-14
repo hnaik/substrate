@@ -13,16 +13,15 @@ RUN apt-get update -y -qq && \
     python3-dev \
     sysvinit-utils \
     sudo \
-    tzdata
+    tzdata \
+    zsh && apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
 RUN curl -fsSL https://pixi.sh/install.sh | bash -s -- && \
     mv /root/.pixi/bin/pixi /usr/local/bin/
-
-RUN apt-get autoremove -y && \
-    apt-get clean -y && \
-    rm -rf /var/lib/apt/lists/*
 
 ENV HOSTNAME="substrate-dev-container"
 RUN echo $HOSTNAME > /etc/hostname

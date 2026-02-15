@@ -59,7 +59,6 @@ gxx = ">=15.2.0,<15.3"
 jsoncpp = ">=1.9.6,<2"
 jupyter = ">=1.1.1,<2"
 loguru = ">=0.7.3,<0.8"
-marimo = ">=0.19.8,<0.20"
 mcp = ">=1.26.0,<2"
 openjdk = ">=25.0.1,<26"
 polars = ">=1.38.1,<2"
@@ -78,6 +77,7 @@ yfinance = ">=0.2.57,<2"
 [pypi-dependencies]
 databento = ">=0.70.0, <0.71"
 pylint-pytest = ">=1.1.7, <2"
+marimo = ">=0.19.11, <0.20"
 
 [target.linux-64.dependencies]
 sbe-cxx = ">=1.37.1,<2"

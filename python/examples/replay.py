@@ -8,16 +8,17 @@ Usage::
 from __future__ import annotations
 
 import sys
+from argparse import ArgumentParser
 from dataclasses import dataclass, field
 
 from substrate.data_loader import load_dbn
 from substrate.replay_engine import ReplayEngine
 from substrate.schema import BookSnapshot
-# from substrate.event_consumer import EventConsumer
+from substrate.event_consumer import EventConsumer
 
 
 @dataclass
-class SpreadTracker:
+class SpreadTracker(EventConsumer):
     """Example consumer that tracks spread statistics."""
 
     spreads: list[float] = field(default_factory=list)
@@ -46,13 +47,9 @@ class SpreadTracker:
         print(f'  Max:   {mx:.4f}')
 
 
-def main() -> None:
-    if len(sys.argv) < 2:
-        print(f'Usage: python {sys.argv[0]} <path-to-dbn-file> [symbol]')
-        sys.exit(1)
-
-    path = sys.argv[1]
-    symbol = sys.argv[2] if len(sys.argv) > 2 else 'SPY'
+def main(args) -> None:
+    path = args.data_path
+    symbol = args.symbol
 
     print(f'Loading {path} for {symbol} ...')
     source = load_dbn(path, symbol=symbol)
@@ -74,5 +71,18 @@ def main() -> None:
     tracker.summary()
 
 
+def parse_args():
+    parser = ArgumentParser(
+        description='Replay book updates and track spread stats.'
+    )
+    parser.add_argument(
+        '--data-path', help='Path to the .dbn.zst file to replay'
+    )
+    parser.add_argument(
+        '--symbol', default='SPY', help='Symbol to filter for (default: SPY)'
+    )
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
-    main()
+    main(parse_args())

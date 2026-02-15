@@ -10,7 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterator
 
-from exrt.schema import BookLevel, BookSnapshot
+from substrate.schema import BookLevel, BookSnapshot
 
 
 def _row_to_snapshot(row) -> BookSnapshot:

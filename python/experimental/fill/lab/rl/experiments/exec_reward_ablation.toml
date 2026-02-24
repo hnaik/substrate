@@ -1,0 +1,54 @@
+# ==============================================================================
+# fill: FInance Laboratory for Learning
+# ==============================================================================
+# Copyright (C) 2025  Harish Naik <harishnaik@gmail.com>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU LesserGeneral Public License along
+# with this program. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
+# ==============================================================================
+
+seed = 123
+output_dir = "./lab/rl/models"
+
+[env]
+steps = 50
+init_inventory = 1000
+fee_per_share = 0.0001
+impact_coeff = 0.002
+gbm_mu = 0.00
+gbm_sigma = 0.02
+dt = 1.0
+
+[agent]
+# algo = "PPO"
+learning_rate = 3.0e-4
+n_steps = 2048
+batch_size = 64
+gamma = 0.99
+clip_range = 0.2
+
+[agent.policy_kwargs]
+net_arch = [128, 128]
+
+[reward]
+type = "is_plus_inv_pen" # ["is_only", "is_plus_inv_pen"]
+inv_penalty = 1e-4
+
+[train]
+timesteps = 200_000
+
+[eval]
+n_episodes = 50
+baselines = ["TWAP", "VWAP", "AC"]
+
+

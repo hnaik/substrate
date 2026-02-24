@@ -1,0 +1,51 @@
+# ==============================================================================
+# fill: FInance Laboratory for Learning
+# ==============================================================================
+# Copyright (C) 2025  Harish Naik <harishnaik@gmail.com>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU LesserGeneral Public License along
+# with this program. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.
+# ==============================================================================
+
+seed = 123
+output_dir = "./lab/rl/models"
+
+[data]
+tickers = ["SPY", "QQQ", "TLT", "GLD"]
+start = "2015-01-01"
+end = "2024-12-31"
+cost_bps = 2.0
+
+[env]
+window = 60
+rebalance_every = 5
+
+[agent]
+algo = "SAC"
+learning_rate = 3.0e-4
+gamma = 0.995
+tau = 0.02
+
+[agent.policy_kwargs]
+net_arch = [256, 256]
+
+[reward]
+type = "ret_minus_lambda_vol" # ["ret_minus_lambda_vol", "sharpe_proxy"]
+lambda_vol = 5.0e-2
+
+[train]
+timesteps = 200_000
+
+[eval]
+n_episodes = 20
+baselines = ["EW", "BH", "MOM", "REV"]

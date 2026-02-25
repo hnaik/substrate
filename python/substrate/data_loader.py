@@ -10,6 +10,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterator
 
+import databento as db
+import polars as pl
+
 from substrate.schema import BookLevel, BookSnapshot
 
 
@@ -34,8 +37,10 @@ def _row_to_snapshot(row) -> BookSnapshot:
             asks.append(BookLevel(price=float(ap), size=int(as_)))
 
     return BookSnapshot(
-        ts_event=int(row.Index.value),  # pandas Timestamp → nanoseconds
-        symbol=str(row.symbol) if hasattr(row, 'symbol') else '',
+        ts_event=int(
+            row['ts_event'].timestamp() * 1e9
+        ),  # datetime → nanoseconds
+        symbol=str(row['symbol']) if row.get('symbol') else '',
         bids=tuple(bids),
         asks=tuple(asks),
     )
@@ -60,21 +65,17 @@ def load_dbn(
     BookSnapshot
         One snapshot per book update, in exchange-timestamp order.
     """
-    try:
-        import databento as db
-    except ImportError as exc:
-        raise ImportError(
-            "The 'databento' package is required. Install with: pip install databento"
-        ) from exc
-
     store = db.DBNStore.from_file(path)
-    df = store.to_df()
+    df = pl.from_pandas(
+        store.to_df()
+    )  # Convert to Polars for easier filtering
 
     if symbol is not None:
-        df = df[df['symbol'] == symbol]
+        # df = df[df['symbol'] == symbol]
+        df = df.filter(pl.col('symbol') == symbol)
 
     # Data is already sorted by ts_event (exchange timestamp).
-    for row in df.itertuples():
+    for row in df.iter_rows(named=True):
         yield _row_to_snapshot(row)
 
 

@@ -47,6 +47,15 @@ class SpreadTracker(EventConsumer):
         print(f'  Max:   {mx:.4f}')
 
 
+def load_dateset(path: str) -> list[BookSnapshot]:
+    """Load a dataset from a .dbn.zst file and return a list of BookSnapshots."""
+    if path.endswith('.dbn.zst'):
+        return list(load_dbn(path))
+    elif path.endswith('.parquet'):
+        raise NotImplementedError('Parquet loading not implemented yet')
+    raise ValueError(f'Unsupported file format: {path}')
+
+
 def main(args) -> None:
     path = args.data_path
     symbol = args.symbol

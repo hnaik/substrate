@@ -85,7 +85,9 @@ def parse_args():
         description='Replay book updates and track spread stats.'
     )
     parser.add_argument(
-        '--data-path', help='Path to the .dbn.zst file to replay'
+        '--data-path',
+        help='Path to the .dbn.zst file to replay',
+        required=True,
     )
     parser.add_argument(
         '--symbol', default='SPY', help='Symbol to filter for (default: SPY)'

@@ -11,7 +11,7 @@ import sys
 from argparse import ArgumentParser
 from dataclasses import dataclass, field
 
-from substrate.data_loader import load_dbn
+from substrate.data_loader import load_dbn, load_parquet
 from substrate.replay_engine import ReplayEngine
 from substrate.schema import BookSnapshot
 from substrate.event_consumer import EventConsumer
@@ -47,12 +47,12 @@ class SpreadTracker(EventConsumer):
         print(f'  Max:   {mx:.4f}')
 
 
-def load_dateset(path: str) -> list[BookSnapshot]:
+def load_dataset(path: str, **kwargs) -> list[BookSnapshot]:
     """Load a dataset from a .dbn.zst file and return a list of BookSnapshots."""
     if path.endswith('.dbn.zst'):
-        return list(load_dbn(path))
+        return list(load_dbn(path, **kwargs))
     elif path.endswith('.parquet'):
-        raise NotImplementedError('Parquet loading not implemented yet')
+        return list(load_parquet(path, **kwargs))
     raise ValueError(f'Unsupported file format: {path}')
 
 
@@ -61,7 +61,7 @@ def main(args) -> None:
     symbol = args.symbol
 
     print(f'Loading {path} for {symbol} ...')
-    source = load_dbn(path, symbol=symbol)
+    source = load_dataset(path, symbol=symbol)
 
     tracker = SpreadTracker()
     engine = ReplayEngine(source)

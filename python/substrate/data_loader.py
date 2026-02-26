@@ -91,3 +91,16 @@ def load_dbn_multi(
     """
     for p in paths:
         yield from load_dbn(p, symbol=symbol)
+
+
+def load_parquet(
+    path: str | Path, symbol: str | None = None
+) -> Iterator[BookSnapshot]:
+    """Placeholder for future Parquet loading support."""
+
+    df = pl.scan_parquet(path)
+    if symbol is not None:
+        df = df.filter(pl.col('symbol') == symbol)
+
+    for row in df.collect().iter_rows(named=True):
+        yield _row_to_snapshot(row)

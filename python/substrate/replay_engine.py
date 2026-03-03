@@ -12,9 +12,7 @@ from typing import Iterator
 
 import polars as pl
 
-from substrate.data_loader import _row_to_snapshot
-from substrate.md.snapshot import BookSnapshot
-from substrate.event_consumer import EventConsumer
+from substrate.schema import BookSnapshot, EventConsumer
 from substrate.replay_stats import ReplayStats
 
 logger = logging.getLogger(__name__)
@@ -113,6 +111,7 @@ class ReplayEngine:
 
     def _iter_source(self) -> Iterator[BookSnapshot]:
         if isinstance(self._source, pl.LazyFrame):
+            from substrate.data_loader import _row_to_snapshot
             try:
                 df = self._source.collect(streaming=True)
             except TypeError:
@@ -122,6 +121,7 @@ class ReplayEngine:
             return
 
         if isinstance(self._source, pl.DataFrame):
+            from substrate.data_loader import _row_to_snapshot
             for row in self._source.iter_rows(named=True):
                 yield _row_to_snapshot(row)
             return

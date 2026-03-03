@@ -31,7 +31,7 @@ cmd = [
 env = { PYTHONPATH = "./python" }
 
 [tasks.marimo]
-cmd = ["python", "-m", "marimo", "edit", "--headless"]
+cmd = ["python", "-m", "marimo", "edit", "--headless", "--host", "0.0.0.0"]
 env = { PYTHONPATH = "./python" }
 
 [tasks.build]

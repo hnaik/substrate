@@ -16,11 +16,12 @@ indent-width = 4
 quote-style = "single"
 
 [tool.ruff.lint]
-select = [
-    "E4", "E7"
-]
+select = ["E4", "E7"]
 ignore = [
     # "E501",  # line-too-long
     # "E203",  # whitespace-before-':'
     # "W503",  # line-break-before-binary-operator
 ]
+
+[tool.pytest]
+testpaths = ["python/tests"]

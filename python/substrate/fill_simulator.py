@@ -20,7 +20,8 @@ def simulate_fill(
 
 
 class FillSimulator:
-    def __init__(self): ...
+    def __init__(self, market_data: QuoteSnapshot):
+        self.market_data = market_data
 
     def execute_market_order(
         self, side: OrderSide, qty: int, quote: QuoteSnapshot

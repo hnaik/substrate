@@ -52,7 +52,8 @@ def load_dataset(path: str, **kwargs) -> list[BookSnapshot]:
     if path.endswith('.dbn.zst'):
         return list(load_dbn(path, **kwargs))
     elif path.endswith('.parquet'):
-        return list(load_parquet(path, **kwargs))
+        # return list(load_parquet(path, **kwargs))
+        return load_parquet(path, **kwargs)
     raise ValueError(f'Unsupported file format: {path}')
 
 

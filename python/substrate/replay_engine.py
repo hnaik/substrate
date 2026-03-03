@@ -10,6 +10,9 @@ import logging
 import time
 from typing import Iterator
 
+import polars as pl
+
+from substrate.data_loader import _row_to_snapshot
 from substrate.md.snapshot import BookSnapshot
 from substrate.event_consumer import EventConsumer
 from substrate.replay_stats import ReplayStats
@@ -48,11 +51,13 @@ class ReplayEngine:
 
     def __init__(
         self,
-        source: Iterator[BookSnapshot],
+        source: Iterator[BookSnapshot] | pl.DataFrame | pl.LazyFrame,
         start_ns: int | None = None,
         end_ns: int | None = None,
     ) -> None:
-        self._source = source
+        self._source: Iterator[BookSnapshot] | pl.DataFrame | pl.LazyFrame = (
+            source
+        )
         self._start_ns = start_ns
         self._end_ns = end_ns
         self._consumers: list[EventConsumer] = []
@@ -75,7 +80,7 @@ class ReplayEngine:
         stats = ReplayStats()
         wall_start = time.perf_counter()
 
-        for snapshot in self._source:
+        for snapshot in self._iter_source():
             # Apply time window filters.
             if (
                 self._start_ns is not None
@@ -105,3 +110,20 @@ class ReplayEngine:
             stats.events_per_sec,
         )
         return stats
+
+    def _iter_source(self) -> Iterator[BookSnapshot]:
+        if isinstance(self._source, pl.LazyFrame):
+            try:
+                df = self._source.collect(streaming=True)
+            except TypeError:
+                df = self._source.collect()
+            for row in df.iter_rows(named=True):
+                yield _row_to_snapshot(row)
+            return
+
+        if isinstance(self._source, pl.DataFrame):
+            for row in self._source.iter_rows(named=True):
+                yield _row_to_snapshot(row)
+            return
+
+        yield from self._source

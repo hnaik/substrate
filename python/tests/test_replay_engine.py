@@ -39,9 +39,9 @@ def test_add_consumer_rejects_non_event_consumer() -> None:
     try:
         engine.add_consumer(object())  # type: ignore[arg-type]
     except TypeError as exc:
-        assert "Consumer must implement EventConsumer protocol" in str(exc)
+        assert 'Consumer must implement EventConsumer protocol' in str(exc)
     else:
-        raise AssertionError("Expected TypeError for invalid consumer")
+        raise AssertionError('Expected TypeError for invalid consumer')
 
 
 def test_run_dispatches_events_and_updates_stats() -> None:

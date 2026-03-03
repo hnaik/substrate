@@ -46,9 +46,16 @@ build-docker:
 run-docker:
 	$(PROJECT_ROOT)/cr/start.sh run
 
-.PHONY: run-jupyter
+.PHONY: run-jupyter run-marimo
+
 run-jupyter:
 	pixi run jupyter
+
+run-marimo:
+	pixi run marimo
+
+run-py-tests:
+	pixi r py -m pytest
 
 .PHONY: clean
 clean:

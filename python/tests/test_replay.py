@@ -7,8 +7,9 @@ from __future__ import annotations
 
 import pytest
 
-from exrt.replay import ReplayEngine, ReplayStats
-from exrt.schema import BookLevel, BookSnapshot, EventConsumer
+from substrate.replay_engine import ReplayEngine
+from substrate.replay_stats import ReplayStats
+from substrate.schema import BookLevel, BookSnapshot
 
 
 # ---------------------------------------------------------------------------

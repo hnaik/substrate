@@ -1,0 +1,6 @@
+from substrate.md.snapshot import BookSnapshot
+
+
+class EventConsumer:
+    def on_book_snapshot(self, snapshot: BookSnapshot) -> None: ...
+    def on_book_update(self, snapshot: BookSnapshot) -> None: ...
